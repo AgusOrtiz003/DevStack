@@ -1,9 +1,10 @@
 from nicegui import ui
 
-# Página de reservas
+# Página de registar reserva
 @ui.page('/reservas')
-def reservas():
+def pagina_registar_reserva():
     ui.page_title('Reservas')
+
     # Parte superior
     with ui.header().classes('items-center justify-between'):
         ui.button(icon='home',on_click=ui.navigate.back).props('flat color=white')
