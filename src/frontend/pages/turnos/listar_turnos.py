@@ -8,7 +8,7 @@ def pagina_listar_turnos():
     def listar_los_turnos():
         conexion = sqlite3.connect('bdd.db')
         cursor = conexion.cursor()
-        cursor.execute('SELECT id, fecha, hora, kinesiologo, tratamiento ,cupoActual, cupoMaximo FROM turnos')
+        cursor.execute('SELECT id, fecha, hora, tratamiento ,cupoActual, cupoMaximo FROM turnos')
         resultados = cursor.fetchall()
         conexion.close()
         turnos = []
@@ -18,10 +18,9 @@ def pagina_listar_turnos():
                 'id': fila[0],
                 'fecha': fila[1],
                 'hora': fila[2],
-                'kinesiologo': fila[3],
-                'tratamiento': fila[4],
-                'cupoActual': fila[5],
-                'cupoMaximo': fila[6]
+                'tratamiento': fila[3],
+                'cupoActual': fila[4],
+                'cupoMaximo': fila[5]
             })
         conexion.close()
         return turnos
