@@ -1,7 +1,7 @@
 import sqlite3
 
-def registrar_turno(fecha,hora,tratamiento,cupo_maximo):
-    conexion = sqlite3.connect('bdd.db')
+def registrar_un_turno(fecha,hora,tratamiento,cupo_maximo):
+    conexion = sqlite3.connect('./src/backend/bdd.db')
     cursor = conexion.cursor()
 
     cursor.execute("""

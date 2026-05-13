@@ -6,7 +6,7 @@ import sqlite3
 def pagina_listar_turnos():
 
     def listar_los_turnos():
-        conexion = sqlite3.connect('bdd.db')
+        conexion = sqlite3.connect('./src/backend/bdd.db')
         cursor = conexion.cursor()
         cursor.execute('SELECT id, fecha, hora, tratamiento ,cupoActual, cupoMaximo FROM turnos')
         resultados = cursor.fetchall()
