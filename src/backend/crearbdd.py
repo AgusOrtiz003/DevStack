@@ -2,7 +2,7 @@ import sqlite3
 
 conexion = sqlite3.connect('./src/back-end/bdd.db')
 cur= conexion.cursor()
-cursor.execute("""
+cur.execute("""
 CREATE TABLE IF NOT EXISTS Usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     dni STRING(8) NOT NULL,

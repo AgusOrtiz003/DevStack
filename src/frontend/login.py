@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from nicegui import app, ui
+from src.backend import registro
 
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
@@ -52,14 +53,22 @@ def login(redirect_to: str = '/') -> RedirectResponse | None:
             ui.notify('Nombre de Usuario o Contraseña incorrectos', color='negative')
 
     with ui.card().classes('absolute-center items-stretch'):
-        username = ui.input('Nombre de Usuario').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        username = ui.input('DNI').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
         password = ui.input('Contraseña', password=True, password_toggle_button=True).on('keydown.enter', try_login)
-        ui.button('Log in', on_click=try_login)
+        ui.button('Login', on_click=try_login)
         ui.button('Register', on_click=None)
 
     return None
-
+## VOY A HACER QUE SE LOGUEEN CON SU DNI
 @ui.page('/register')
+    with ui.card().classes('absolute-center items-stretch'):
+        dni = ui.input('DNI').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        password = ui.input('Contraseña', password=True, password_toggle_button=True).on('keydown.enter', try_login)
+        nombre = ui.input('Nombre/s').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        apellido = ui.input('Apellido').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        email = ui.input('Email').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        fnac = ui.input('Fecha de nacimiento').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        ui.button('Register', on_click=)
     
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
