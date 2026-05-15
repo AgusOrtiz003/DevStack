@@ -1,5 +1,6 @@
 from nicegui import ui
 from backend.listar_turnos_para_secretarias import listar_los_turnos
+from backend.eliminar_turno import eliminar_turno_seleccionado
 import sqlite3
 
 # Página de listado de reservas pendientes
@@ -18,6 +19,7 @@ def pagina_listar_turnos():
 
     # Datos
     turnos = listar_los_turnos()
+
 
 ####################################### PÁGINA ##################################################
     ui.page_title('Historial de Turnos')
@@ -47,6 +49,5 @@ def pagina_listar_turnos():
             'Eliminar',
             icon='delete',
             color='red',
-            #on_click=lambda:
-            #eliminar_turno(tabla.selected)
-        )
+            on_click=lambda: eliminar_turno_seleccionado(tabla)
+)
