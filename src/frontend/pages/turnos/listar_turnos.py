@@ -1,37 +1,10 @@
 from nicegui import ui
+from backend.listar_turnos_para_secretarias import listar_los_turnos
 import sqlite3
 
 # Página de listado de reservas pendientes
 @ui.page('/listarTurnos')
 def pagina_listar_turnos():
-
-    def listar_los_turnos():
-        conexion = sqlite3.connect('./src/backend/bdd.db')
-        cursor = conexion.cursor()
-        cursor.execute('SELECT id, fecha, hora, tratamiento ,cupoActual, cupoMaximo FROM turnos')
-        resultados = cursor.fetchall()
-        conexion.close()
-        turnos = []
-
-        for fila in resultados:
-            turnos.append({
-                'id': fila[0],
-                'fecha': fila[1],
-                'hora': fila[2],
-                'tratamiento': fila[3],
-                'cupoActual': fila[4],
-                'cupoMaximo': fila[5]
-            })
-        conexion.close()
-        return turnos
-
-    ui.page_title('Historial de Turnos')
-    # Parte superior
-    with ui.header().classes('items-center justify-between'):
-        ui.button(icon='home',on_click=ui.navigate.back).props('flat color=white')
-        with ui.row().classes('items-center gap-1'):
-            ui.button(icon='account_circle').props('flat color=white')
-
     # Columnas
     columnas = [
     {'name': 'id', 'label': 'ID', 'field': 'id'},
@@ -45,6 +18,15 @@ def pagina_listar_turnos():
 
     # Datos
     turnos = listar_los_turnos()
+
+####################################### PÁGINA ##################################################
+    ui.page_title('Historial de Turnos')
+    # Parte superior
+    with ui.header().classes('items-center justify-between'):
+        ui.button(icon='home',on_click=ui.navigate.back).props('flat color=white')
+        with ui.row().classes('items-center gap-1'):
+            ui.button(icon='account_circle').props('flat color=white')
+
 
     # Tabla
     tabla = ui.table(
