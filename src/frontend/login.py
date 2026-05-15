@@ -42,8 +42,8 @@ def main_page() -> None:
 ## VOY A HACER QUE SE LOGUEEN CON SU DNI
 @ui.page('/register')
 def register() -> None:
-    def try_register(dni, nombre, apellido, email, fechaNac, rol):
-        if registrar(dni, password.value, nombre, apellido, email, fechaNac):
+    def try_register(dni, password, nombre, apellido, email, fechaNac):
+        if registrar(dni, password, nombre, apellido, email, fechaNac):
             ui.notify('Registro exitoso', color='positive')
             ui.navigate.to('/login')
         else:

@@ -5,19 +5,16 @@ def registrar(dni, paswd, nom, ap, mail, fnac):
     cur = conexion.cursor()
 
     if not existe(dni):
-
         cur.execute("""
         INSERT INTO Usuarios (dni, contraseña, nombre, apellido, email, fechaNac, rol)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (dni, paswd, nom, ap, mail, fnac, "Paciente"))
 
         conexion.commit()
-        conexion.close()
         return True
-
     else:
-        conexion.close()
         return False
+    conexion.close()
 
 
 def existe(dni):
