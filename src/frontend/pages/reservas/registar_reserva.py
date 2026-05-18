@@ -1,8 +1,48 @@
 from nicegui import ui
+from backend.listar_turnos_para_reservas import listar_los_turnos_para_reservas
+from backend.crear_reserva import registrar_una_reserva
 
 # Página de registar reserva
 @ui.page('/reservas')
 def pagina_registar_reserva():
+
+    def reservar(e):
+
+        fila = e.args
+        
+        # EL 1 EN ID_PACIENTE ES TEMPORAL
+        registrar_una_reserva(
+            fila['fecha'],
+            fila['hora'],
+            1,
+            fila['tratamiento']
+        )
+
+        ui.notify(
+            'Reserva registrada correctamente',
+            color='positive'
+        )
+
+        ui.timer(1.5,lambda: ui.navigate.reload(),once=True)
+
+    def lista_espera(e):
+        ui.notify(
+            f"Agregado a lista de espera: {e.args['fecha']}"
+        )
+        ui.navigate.reload()
+
+    # Columnas
+    columnas = [
+    {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
+    {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
+    {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
+    {'name': 'cupoActual', 'label': 'Cupo Actual', 'field': 'cupoActual'},
+    {'name': 'accion','label': 'Acción', 'field': 'accion'}
+    ]
+
+    turnos = listar_los_turnos_para_reservas()
+
+####################################### PÁGINA ##################################################
     ui.page_title('Reservas')
 
     # Parte superior
@@ -13,16 +53,39 @@ def pagina_registar_reserva():
             ui.button(icon='account_circle').props('flat color=white')
     
     # Parte central
-    with ui.card().classes('fixed-center items-center p-20%'):
-        ui.label("Ingresar reserva").classes('')
-        ui.date_input('Fecha de reserva').props('locale=es')
-        with ui.row():
-            ui.button("Reservar")
-            ui.button("Lista de espera")
+    # Tabla
+    tabla = ui.table(
+        columns=columnas,
+        rows=turnos,
+        row_key='fecha',
+    ).classes('w-full')
 
-    # Parte izquierda
-    ui.left_drawer(top_corner=False, bottom_corner=True)
+     # Personaliza la columna acción
+    tabla.add_slot('body-cell-accion', r'''
+        <q-td :props="props">
+
+            <q-btn
+                v-if="props.row.cupoActual > 0"
+                color="positive"
+                label="Reservar"
+                icon="event_available"
+                @click="$parent.$emit('reservar', props.row)"
+            />
+
+            <q-btn
+                v-else
+                color="warning"
+                label="Lista de espera"
+                icon="hourglass_top"
+                @click="$parent.$emit('espera', props.row)"
+            />
+
+        </q-td>
+    ''')
+
+    tabla.on('reservar', reservar)
+    tabla.on('espera', lista_espera)
 
     # Parte derecha
     with ui.right_drawer(fixed=False).style('background-color: #ebf1fa').classes('items-center').props('bordered') as right_drawer:
-        ui.button('Reservas pendientes',on_click=lambda: ui.navigate.to('/reservasPendientes'))
+        ui.button('Mis reservas', icon='calendar_month', on_click=lambda: ui.navigate.to('/listarReservas'))
