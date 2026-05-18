@@ -10,6 +10,7 @@ sys.path.append(str(src_path))
 from nicegui import app, ui
 from backend.registro import registrar
 from backend.login import chequearContraseña
+from frontend.pages.reservas import reservas
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
@@ -35,9 +36,16 @@ def main_page() -> None:
         app.storage.user.clear()
         ui.navigate.to('/login')
 
-    with ui.column().classes('absolute-center items-center'):
-        ui.label(f'Hello {app.storage.user["username"]}!').classes('text-2xl')
-        ui.button(on_click=logout, icon='logout').props('outline round')
+    ui.page_title('Página principal')
+    ui.query('body').style('background-color: #1E73B7')
+
+    with ui.header().classes('bg-transparent items-center'):
+        ui.button(on_click=logout, icon='logout').classes('bg-transparent text-white').props('flat')
+
+    with ui.card().classes('fixed-center items-center').classes('w-80'):
+        ui.image('src/frontend/icons/kinePro-logo.png').classes('h-full w-30 object-contain')
+        ui.button('Reservar turno', icon='event', on_click=lambda: ui.navigate.to('/reservas')).classes('w-full justify-start').props('align="left"')
+        ui.button('Listar turnos', icon='list', on_click=lambda: ui.navigate.to('/listarTurnos')).classes('w-full justify-start').props('align="left"')
 
 ## VOY A HACER QUE SE LOGUEEN CON SU DNI
 @ui.page('/register')
@@ -84,4 +92,4 @@ def login(redirect_to: str = '/') -> RedirectResponse | None:
     return None
 
 if __name__ in {'__main__', '__mp_main__'}:
-    ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
+    ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',language='es')

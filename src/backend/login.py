@@ -5,7 +5,7 @@ def chequearContraseña(dni, contraseña):
     cur.execute("SELECT contraseña FROM Usuarios WHERE dni=?", (dni,))
     resultado = cur.fetchone()
     conexion.close()
-    if resultado is not None and resultado[0] == contraseña:
+    if resultado is not None and str(resultado[0]) == str(contraseña):
         return True
     else:
         return False
