@@ -1,9 +1,12 @@
 from nicegui import ui
 from backend.listar_turnos_para_secretarias import listar_los_turnos
 from backend.eliminar_turno import eliminar_turno_seleccionado
+from backend.turno_pendiente import turno_pendiente
+from backend.verificar_cupo_disponible import verificar_cupo_disponible
 import sqlite3
 
 DB_PATH = 'src/backend/bdd.db'
+
 
 
 def actualizar_turno(
@@ -13,31 +16,22 @@ def actualizar_turno(
     tratamiento,
     cupo_maximo
 ):
-    conexion = sqlite3.connect(DB_PATH)
-
-    cursor = conexion.cursor()
-
-    cursor.execute("""
-        UPDATE turnos
-        SET
-            fecha = ?,
-            hora = ?,
-            tratamiento = ?,
-            cupoMaximo = ?
-        WHERE id = ?
-    """, (
-        fecha,
-        hora,
-        tratamiento,
-        cupo_maximo,
-        id_turno
-    ))
-
-    conexion.commit()
-    conexion.close()
+    with sqlite3.connect(DB_PATH) as conexion:
+        cursor = conexion.cursor()
+        cursor.execute("""
+            UPDATE turnos
+            SET fecha = ?, hora = ?, tratamiento = ?, cupoMaximo = ?
+            WHERE id = ?
+        """, (
+            fecha,
+            hora,
+            tratamiento,
+            cupo_maximo,
+            id_turno
+        ))
+        conexion.commit()
 
 
-# Página de listado de reservas pendientes
 @ui.page('/listarTurnos')
 def pagina_listar_turnos():
 
@@ -51,9 +45,10 @@ def pagina_listar_turnos():
         {'name': 'cupoMaximo', 'label': 'Cupo Máximo', 'field': 'cupoMaximo'},
     ]
 
-    turnos = listar_los_turnos()
+    def cargar_tabla(data=None):
+        tabla.rows = data if data is not None else listar_los_turnos()
+        tabla.update()
 
-####################################### PÁGINA ##################################################
 
     ui.page_title('Historial de Turnos')
 
@@ -66,15 +61,39 @@ def pagina_listar_turnos():
 
         with ui.row().classes('items-center gap-1'):
             ui.button(icon='account_circle').props('flat color=white')
+    ################################ TABLA ################################
 
     tabla = ui.table(
         columns=columnas,
-        rows=turnos,
+        rows=listar_los_turnos(),
         row_key='id',
         selection='single'
     ).classes('w-full')
 
-####################################### DIALOG MODIFICAR ########################################
+    ################################ FILTROS ################################
+
+    def mostrar_todos():
+        cargar_tabla()
+
+    def mostrar_pendientes():
+        cargar_tabla([
+            t for t in listar_los_turnos()
+            if turno_pendiente(t['id'])
+        ])
+
+    def mostrar_disponibles():
+        cargar_tabla([
+            t for t in listar_los_turnos()
+            if verificar_cupo_disponible(t['id'])
+        ])
+
+    def mostrar_ocupados():
+        cargar_tabla([
+            t for t in listar_los_turnos()
+            if not verificar_cupo_disponible(t['id'])
+        ])
+
+    ################################ DIALOG ################################
 
     dialogo = ui.dialog()
 
@@ -83,52 +102,39 @@ def pagina_listar_turnos():
         ui.label('Modificar Turno').classes('text-h6')
 
         ui.label('Fecha')
-        input_fecha = ui.date().props(
-            'mask=YYYY-MM-DD'
-        )
+        input_fecha = ui.date().props('mask=YYYY-MM-DD')
 
-        # 🔽 DROPDOWN SIMPLE DE HORAS
         horas_disponibles = [
-            '08:00', '08:30',
-            '09:00', '09:30',
-            '10:00', '10:30',
-            '11:00', '11:30',
-            '12:00', '12:30',
-            '13:00', '13:30',
-            '14:00', '14:30',
-            '15:00', '15:30',
-            '16:00', '16:30',
-            '17:00', '17:30',
-            '18:00', '18:30',
-            '19:00', '19:30',
-            '20:00'
+            '08:00','08:30','09:00','09:30','10:00','10:30',
+            '11:00','11:30','12:00','12:30','13:00','13:30',
+            '14:00','14:30','15:00','15:30','16:00','16:30',
+            '17:00','17:30','18:00','18:30','19:00','19:30','20:00'
         ]
-        
-        ui.label('Hora')
-        input_hora = ui.select(
-        horas_disponibles
-        ).props('outlined dense')
 
-        tratamientos = [
-            'Tren superior',
-            'Tren medio',
-            'Tren inferior'
-        ]   
+        ui.label('Hora')
+        input_hora = ui.select(horas_disponibles).props('outlined dense')
+
+        tratamientos = ['Tren superior', 'Tren medio', 'Tren inferior']
 
         input_tratamiento = ui.select(
             tratamientos,
             label='Tratamiento'
         ).props('outlined dense')
-        
-        input_cupo_maximo = ui.number(
-            'Cupo Máximo'
-        )
+
+        input_cupo_maximo = ui.number('Cupo Máximo')
 
         turno_id = {'valor': None}
 
-####################################### GUARDAR #################################################
-
         def guardar_cambios():
+
+            if (
+                not input_fecha.value or
+                not input_hora.value or
+                not input_tratamiento.value or
+                not input_cupo_maximo.value
+            ):
+                ui.notify('Completá todos los campos', color='red')
+                return
 
             actualizar_turno(
                 id_turno=turno_id['valor'],
@@ -138,64 +144,40 @@ def pagina_listar_turnos():
                 cupo_maximo=input_cupo_maximo.value
             )
 
-            tabla.rows = listar_los_turnos()
-            tabla.update()
-
+            cargar_tabla()
             dialogo.close()
 
-            ui.notify(
-                'Turno modificado correctamente',
-                color='green'
-            )
-
-####################################### BOTONES DIALOGO #########################################
+            ui.notify('Turno modificado correctamente', color='green')
 
         with ui.row().classes('w-full justify-end'):
 
-            ui.button(
-                'Cancelar',
-                on_click=dialogo.close
-            ).props('flat')
+            ui.button('Cancelar', on_click=dialogo.close).props('flat')
 
-            ui.button(
-                'Guardar',
-                icon='save',
-                on_click=guardar_cambios
-            )
+            ui.button('Guardar', icon='save', on_click=guardar_cambios)
 
-####################################### FUNCION MODIFICAR #######################################
+    ################################ MODIFICAR ################################
 
     def abrir_modificacion():
 
         if not tabla.selected:
-
-            ui.notify(
-                'Seleccioná un turno',
-                color='red'
-            )
-
+            ui.notify('Seleccioná un turno', color='red')
             return
 
         turno = tabla.selected[0]
 
         turno_id['valor'] = turno['id']
-
         input_fecha.value = turno['fecha']
-        input_hora.value = turno['hora']
+        input_hora.value = turno['hora'][:5]
         input_tratamiento.value = turno['tratamiento']
         input_cupo_maximo.value = turno['cupoMaximo']
 
         dialogo.open()
 
-####################################### BOTONES #################################################
+    ################################ BOTONES ################################
 
     with ui.row():
 
-        ui.button(
-            'Modificar',
-            icon='edit',
-            on_click=abrir_modificacion
-        )
+        ui.button('Modificar', icon='edit', on_click=abrir_modificacion)
 
         ui.button(
             'Eliminar',
@@ -203,3 +185,20 @@ def pagina_listar_turnos():
             color='red',
             on_click=lambda: eliminar_turno_seleccionado(tabla)
         )
+
+    ################################ FILTROS UI ################################
+
+    ui.separator()
+
+    with ui.row():
+
+        ui.button('Todos', icon='list', on_click=mostrar_todos)
+
+        ui.button('Turnos Pendientes', icon='schedule',
+                   color='blue', on_click=mostrar_pendientes)
+
+        ui.button('Turnos Disponibles', icon='event_available',
+                   color='green', on_click=mostrar_disponibles)
+
+        ui.button('Turnos Ocupados', icon='event_busy',
+                   color='red', on_click=mostrar_ocupados)
