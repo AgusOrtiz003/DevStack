@@ -1,4 +1,4 @@
-from nicegui import ui
+from nicegui import ui, app
 from backend.reservas.reserva_bdd import listarReservas
 
 # Página de listado de reservas del paciente
@@ -12,5 +12,6 @@ def pagina_listar_reservas():
         with ui.row().classes('items-center gap-1'):
             ui.button(icon='account_circle')
 
+    reservas=listarReservas(dniPaciente)
     # Parte central
-    
+    for 
