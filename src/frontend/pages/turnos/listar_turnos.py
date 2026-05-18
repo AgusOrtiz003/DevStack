@@ -109,10 +109,17 @@ def pagina_listar_turnos():
         horas_disponibles
         ).props('outlined dense')
 
-        input_tratamiento = ui.input(
-            'Tratamiento'
-        )
+        tratamientos = [
+            'Tren superior',
+            'Tren medio',
+            'Tren inferior'
+        ]   
 
+        input_tratamiento = ui.select(
+            tratamientos,
+            label='Tratamiento'
+        ).props('outlined dense')
+        
         input_cupo_maximo = ui.number(
             'Cupo Máximo'
         )
