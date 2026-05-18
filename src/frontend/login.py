@@ -9,8 +9,8 @@ src_path=pathlib.Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 from nicegui import app, ui
 from backend.registro import registrar
-from backend.login import chequearContraseña
-from frontend.pages.reservas import reservas
+from backend.login import chequearContraseña, getNombre, getRol
+from frontend.pacientes.home import main_page as paciente_home
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
@@ -36,18 +36,10 @@ def main_page() -> None:
         app.storage.user.clear()
         ui.navigate.to('/login')
 
-    ui.page_title('Página principal')
-    ui.query('body').style('background-color: #1E73B7')
+    with ui.column().classes('absolute-center items-center'):
+        ui.label(f'Bienvenido {app.storage.user["username"]}!').classes('text-2xl')
+        ui.button(on_click=logout, icon='logout').props('outline round')
 
-    with ui.header().classes('bg-transparent items-center'):
-        ui.button(on_click=logout, icon='logout').classes('bg-transparent text-white').props('flat')
-
-    with ui.card().classes('fixed-center items-center').classes('w-80'):
-        ui.image('src/frontend/icons/kinePro-logo.png').classes('h-full w-30 object-contain')
-        ui.button('Reservar turno', icon='event', on_click=lambda: ui.navigate.to('/reservas')).classes('w-full justify-start').props('align="left"')
-        ui.button('Listar turnos', icon='list', on_click=lambda: ui.navigate.to('/listarTurnos')).classes('w-full justify-start').props('align="left"')
-
-## VOY A HACER QUE SE LOGUEEN CON SU DNI
 @ui.page('/register')
 def register() -> None:
     def try_register(dni, password, nombre, apellido, email, fechaNac):
@@ -65,7 +57,6 @@ def register() -> None:
         email = ui.input('Email').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
         fnac = ui.date_input('Fecha de nacimiento').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
         ui.button('Register', on_click=lambda: try_register(dni.value, password.value, nombre.value, apellido.value, email.value, fnac.value))
-    
     return None    
 
 @ui.page('/login')
@@ -75,20 +66,21 @@ def login(redirect_to: str = '/') -> RedirectResponse | None:
 
     def try_login(user,passwd) -> None:        
         if(chequearContraseña(user, passwd)):
-            app.storage.user.update(username=username.value, authenticated=True)
-            ui.navigate.to(redirect_to)  # go back to where the user wanted to go
+            username=getNombre(user)
+            rol=getRol(user)
+            app.storage.user.update(username=username, authenticated=True, rol=rol)
+            ui.navigate.to(f'/{rol}/home')
         else:
             ui.notify('Nombre de Usuario o Contraseña incorrectos', color='negative')
-            
+
     def go_to_register():
         ui.navigate.to('/register')
 
     with ui.card().classes('absolute-center items-stretch'):
         username = ui.input('DNI').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
-        password = ui.input('Contraseña', password=True, password_toggle_button=True).on('keydown.enter', try_login)
+        password = ui.input('Contraseña', password=True, password_toggle_button=True).on('keydown.enter', lambda: try_login(username.value, password.value))
         ui.button('Login', on_click=lambda: try_login(username.value, password.value))
         ui.button('Register', on_click=go_to_register)
-
     return None
 
 if __name__ in {'__main__', '__mp_main__'}:
