@@ -25,20 +25,26 @@ class AuthMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next):
+
         path = request.url.path
-        if app.storage.user.get('authenticated') or path in unrestricted_page_routes or path.startswith('/_nicegui'):
+
+        authenticated = app.storage.user.get('authenticated')
+        rol = app.storage.user.get('rol')
+
+        # usuario autenticado entrando a raíz
+        if authenticated and path == '/':
+            return RedirectResponse(f'/{rol}/home')
+
+        # rutas permitidas sin login
+        if (
+            authenticated
+            or path in unrestricted_page_routes
+            or path.startswith('/_nicegui')
+        ):
             return await call_next(request)
-        return RedirectResponse(f'/login?redirect_to={path}')
 
-@ui.page('/')
-def main_page() -> None:
-    def logout() -> None:
-        app.storage.user.clear()
-        ui.navigate.to('/login')
-
-    with ui.column().classes('absolute-center items-center'):
-        ui.label(f'Bienvenido {app.storage.user["username"]}!').classes('text-2xl')
-        ui.button(on_click=logout, icon='logout').props('outline round')
+        # usuario no autenticado
+        return RedirectResponse('/login')
 
 @ui.page('/register')
 def register() -> None:
