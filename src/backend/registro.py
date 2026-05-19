@@ -1,6 +1,5 @@
 import sqlite3
 from utils.fetchUsuarios import existe
-
 def registrar(dni, paswd, nom, ap, mail, fnac):
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
@@ -12,7 +11,8 @@ def registrar(dni, paswd, nom, ap, mail, fnac):
         """, (dni, paswd, nom, ap, mail, fnac, "Paciente"))
 
         conexion.commit()
+        conexion.close()
         return True
     else:
+        conexion.close()
         return False
-    conexion.close()
