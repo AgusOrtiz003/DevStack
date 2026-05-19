@@ -15,7 +15,7 @@ def existe(dni):
 
     return resultado is not None
 
-def chequearContraseña(dni, contraseña):
+def chequear_contraseña(dni, contraseña):
     '''Dado un dni y una contraseña, retorna si la contraseña es correcta para ese dni'''
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
@@ -27,7 +27,7 @@ def chequearContraseña(dni, contraseña):
     else:
         return False
     
-def getDatos(dni):
+def get_datos(dni):
     '''Dado un dni, retorna un diccionario con los datos del usuario'''
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
