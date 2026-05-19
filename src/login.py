@@ -9,8 +9,8 @@ src_path=pathlib.Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 from nicegui import app, ui
 from backend.registro import registrar
-from backend.login import chequearContraseña, getNombre, getRol
 from frontend.pacientes.home import main_page as paciente_home
+from utils.fetchUsuarios import chequear_contraseña, get_datos
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
@@ -65,9 +65,10 @@ def login(redirect_to: str = '/') -> RedirectResponse | None:
         return RedirectResponse('/')
 
     def try_login(user,passwd) -> None:        
-        if(chequearContraseña(user, passwd)):
-            username=getNombre(user)
-            rol=getRol(user)
+        if(chequear_contraseña(user, passwd)):
+            datos=get_datos(user)
+            username=datos['nombre']
+            rol=datos['rol']
             app.storage.user.update(username=username, authenticated=True, dni=user, rol=rol)
             ui.navigate.to(f'/{rol}/home')
         else:
