@@ -9,7 +9,7 @@ src_path=pathlib.Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 from nicegui import app, ui
 from backend.registro import registrar
-from backend.login import chequearContraseña
+from utils.fetchUsuarios import chequearContraseña
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 

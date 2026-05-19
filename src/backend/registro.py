@@ -1,4 +1,5 @@
 import sqlite3
+from utils.fetchUsuarios import existe
 
 def registrar(dni, paswd, nom, ap, mail, fnac):
     conexion = sqlite3.connect('./src/backend/bdd.db')
@@ -15,18 +16,3 @@ def registrar(dni, paswd, nom, ap, mail, fnac):
     else:
         return False
     conexion.close()
-
-
-def existe(dni):
-    conexion = sqlite3.connect('./src/backend/bdd.db')
-    cur = conexion.cursor()
-
-    cur.execute("""
-    SELECT * FROM Usuarios WHERE dni = ?
-    """, (dni,))
-
-    resultado = cur.fetchone()
-
-    conexion.close()
-
-    return resultado is not None
