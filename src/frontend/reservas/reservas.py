@@ -1,10 +1,10 @@
 from nicegui import ui, app
 from datetime import date, timedelta
-from backend.reservas.reserva_bdd import registrarReserva
+from backend.reservas.reserva_bdd import registrarReserva, listarReservas
 import sqlite3
 
 # Página de registar reserva
-def pagina_reservas():
+def pagina_reservas(tabs, reservas_tab,tabla_reservas):
     def formularioReserva():
         with ui.card().classes('w-150 p-6'):
             with ui.row().classes('w-full no-wrap gap-8 items-start'):
@@ -15,27 +15,42 @@ def pagina_reservas():
                     obraSocial = ui.select(options=obrasSociales,label='Obra Social').classes('w-full')
                     metPago = ui.select(options=metodosPago,label='Método de Pago').classes('w-full')
                     tratamiento = ui.select(options=tratamientos,label='Tratamiento').classes('w-full')
-            ui.button('Reservar turno',icon='event_available',on_click=lambda: crearReserva(fecha.value,hora.value,tratamiento.value,obraSocial.value,metPago.value,dniPaciente)).classes('w-full text-lg')
+            ui.button('Reservar turno',icon='event_available',
+                      on_click=lambda: crearReserva(fecha,
+                                                    hora,
+                                                    tratamiento,
+                                                    obraSocial,
+                                                    metPago,
+                                                    dniPaciente)
+                                                    ).classes('w-full text-lg')
     
     def crearReserva(fecha,hora,trat,obraSoc,metPago,dniPac):
-        if not fecha:
+        if not fecha.value:
             ui.notify('Seleccione una fecha', color='warning')
             return
-        if not hora:
+        if not hora.value:
             ui.notify('Seleccione una hora', color='warning')
             return
-        if not obraSoc:
+        if not obraSoc.value:
             ui.notify('Seleccione una obra social', color='warning')
             return
-        if not metPago:
+        if not metPago.value:
             ui.notify('Seleccione un método de pago', color='warning')
             return
-        if not trat:
+        if not trat.value:
             ui.notify('Seleccione un tratamiento', color='warning')
             return
         try:
-            registrarReserva(fecha,hora,trat,obraSoc,metPago,dniPac)
+            registrarReserva(fecha.value,hora.value,trat.value,obraSoc.value,metPago.value,dniPac)
+            tabla_reservas.rows = listarReservas(dniPaciente)
+            tabla_reservas.update()
             ui.notify('Turno reservado con éxito',color='positive')
+            fecha.value = None
+            hora.value = None
+            obraSoc.value = None
+            metPago.value = None
+            trat.value = None
+            tabs.set_value(reservas_tab)
         except sqlite3.IntegrityError:
             ui.notify('Turno ya reservado', color='negative')
         except Exception as e: # Verificar errores
@@ -48,8 +63,6 @@ def pagina_reservas():
     metodosPago=['Efectivo','Transferencia','Billetera virtual']
     horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00']
 ####################################### PÁGINA ##################################################
-    # Parte superior
-    
     # Parte central
     with ui.row().classes('w-full justify-center'):
         formularioReserva()

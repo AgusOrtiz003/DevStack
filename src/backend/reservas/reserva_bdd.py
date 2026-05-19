@@ -41,26 +41,35 @@ def registrarReserva(fecha,hora,trat,obraSoc,metPag,dniPac):
                 conexion.close()
                 return
         cursor.execute('INSERT INTO reservas(dniPaciente, idTurno, obraSocial, metodoPago) VALUES(?,?,?,?)',(dniPac,idTurno,obraSoc,metPag))
-        if metPag == "Efectivo":
-            cursor.execute('UPDATE turnos SET cupoActual = cupoActual + 1 WHERE (idTurno=?)',(idTurno,))
-        print('Reserva creada con éxito')
+        cursor.execute('UPDATE turnos SET cupoActual = cupoActual + 1 WHERE idTurno=?',(idTurno,))
         conexion.commit()
-        conexion.close()
 ###################################################################################################
 def listarReservas(dniPac):
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
-        cursor.execute('SELECT t.fecha, t.hora, t.tratamiento, r.obraSocial, r.metodoPago, r.estado FROM reservas r INNER JOIN turnos t ON r.idTurno = t.idTurno WHERE dniPaciente=? AND estado="Pendiente"',(dniPac,))
+        cursor.execute('SELECT r.idReserva, r.obraSocial, r.metodoPago, r.estado, t.fecha, t.hora, t.tratamiento FROM reservas r INNER JOIN turnos t ON r.idTurno = t.idTurno WHERE dniPaciente=? AND estado="Pendiente"',(dniPac,))
         resultados = cursor.fetchall()
         reservas = []
         for resul in resultados:
             reserva = {
-                    'fecha': resul[0],
-                    'hora': resul[1],
-                    'tratamiento': resul[2],
-                    'obraSocial': resul[3],
-                    'metodoPago': resul[4],
-                    'estado': resul[5]
+                    'idReserva': resul[0],
+                    'obraSocial': resul[1],
+                    'metodoPago': resul[2],
+                    'estado': resul[3],
+                    'fecha': resul[4],
+                    'hora': resul[5],
+                    'tratamiento': resul[6]
                 }
             reservas.append(reserva)
         return reservas
+    conexion.close()
+###################################################################################################
+def cancelarReserva(idReserva):
+    with sqlite3.connect('src/backend/bdd.db') as conexion:
+        cursor = conexion.cursor()
+        cursor.execute('SELECT idTurno FROM reservas WHERE idReserva=?',(idReserva,))
+        idTurno = cursor.fetchone()
+        cursor.execute('UPDATE turnos SET cupoActual = cupoActual - 1 WHERE idTurno=?',(idTurno))
+        cursor.execute('DELETE FROM reservas WHERE idReserva=?',(idReserva,))
+        conexion.commit()
+    conexion.close()
