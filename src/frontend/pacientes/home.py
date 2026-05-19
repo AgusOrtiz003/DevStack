@@ -2,6 +2,7 @@
 import pathlib
 import sys
 import sqlite3
+# Se deberia arreglar esto: from utils import imports
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -10,12 +11,13 @@ sys.path.append(str(src_path))
 from nicegui import app, ui
 from frontend.reservas.reservas import pagina_reservas
 from frontend.reservas.listar_reservas import pagina_listar_reservas
-
+from frontend.perfil import perfil 
 @ui.page('/Paciente/home')
+
+
+
+        
 def main_page() -> None:
-    def logout() -> None:
-        app.storage.user.clear()
-        ui.navigate.to('/login')
     
     with ui.header().classes(replace='row items-center justify-between gap-4') as header:
         with ui.tabs() as tabs:
@@ -23,7 +25,7 @@ def main_page() -> None:
             ui.tab('Reservar turno',icon='event')
             ui.tab('Mis reservas',icon='calendar_month')
         ui.space()
-        ui.button(icon='account_circle').props('flat color=white round')
+        ui.button(icon='account_circle').props('flat color=white round').on('click', lambda: ui.navigate.to('/ver_perfil'))
         ui.button(on_click=logout, icon='logout').props('flat color=white round')
        #ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
 
@@ -41,5 +43,8 @@ def main_page() -> None:
             pagina_reservas()
         with ui.tab_panel('Mis reservas'):
             pagina_listar_reservas()
-
+            
+def logout() -> None:
+        app.storage.user.clear()
+        ui.navigate.to('/login')
 ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
