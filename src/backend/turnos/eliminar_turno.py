@@ -1,6 +1,6 @@
 import sqlite3
 from nicegui import ui
-from backend.listar_turnos_para_secretarias import listar_los_turnos
+from backend.turnos import listar_los_turnos
 
 
 def eliminar_turno_seleccionado(tabla):

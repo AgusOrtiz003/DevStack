@@ -55,13 +55,12 @@ def listarReservas(dniPac):
         reservas = []
         for resul in resultados:
             reserva = {
-                    'idReserva': resul[0],
-                    'fecha': resul[1],
-                    'hora': resul[2],
-                    'tratamiento': resul[3],
-                    'obraSocial': resul[4],
-                    'metodoPago': resul[5],
-                    'estado': resul[6]
+                    'fecha': resul[0],
+                    'hora': resul[1],
+                    'tratamiento': resul[2],
+                    'obraSocial': resul[3],
+                    'metodoPago': resul[4],
+                    'estado': resul[5]
                 }
             reservas.append(reserva)
         return reservas

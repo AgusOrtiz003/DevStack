@@ -1,11 +1,9 @@
 from nicegui import ui, app
 from datetime import date, timedelta
-from frontend.pages.reservas import listar_reservas
 from backend.reservas.reserva_bdd import registrarReserva
 import sqlite3
 
 # Página de registar reserva
-@ui.page('/reservas')
 def pagina_reservas():
     def formularioReserva():
         with ui.card().classes('w-150 p-6'):
@@ -44,26 +42,14 @@ def pagina_reservas():
             print(e)
 ### MOVER CONSTANTES A OTRO LADO
     fecha_minima = (date.today() + timedelta(days=7)).strftime('%Y/%m/%d') # EL valor de days se puede cambiar (1 semana)
-    dniPaciente = app.storage.user.get('username')
+    dniPaciente = app.storage.user.get('dni')
     tratamientos=['Tren superior','Tren medio','Tren inferior']
     obrasSociales=['IOMA','OSDE','Ninguna']
     metodosPago=['Efectivo','Transferencia','Billetera virtual']
     horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00']
 ####################################### PÁGINA ##################################################
-    ui.page_title('Reservas')
-    ui.query('body').style('background-color: #1E73B7')
-
     # Parte superior
-    with ui.header().classes('bg-transparent items-center justify-between'):
-        ui.button(icon='arrow_back',on_click=lambda: ui.navigate.to('/')).classes('bg-transparent text-white').props('flat')
-        with ui.row().classes('items-center gap-4'):
-            ui.button(icon='account_circle').classes('bg-transparent text-white').props('flat')
-            ui.button(on_click=lambda: right_drawer.toggle(), icon='menu').classes('bg-transparent text-white').props('flat')
     
     # Parte central
     with ui.row().classes('w-full justify-center'):
         formularioReserva()
-
-    # Parte derecha
-    with ui.right_drawer(top_corner=True, fixed=False, value=False).style('background-color: #ebf1fa').classes('items-center').props('bordered') as right_drawer:
-        ui.button('Mis reservas', icon='calendar_month', on_click=lambda: ui.navigate.to('/listarReservas')).classes('w-full bg-transparent').props('flat')

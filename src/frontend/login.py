@@ -68,7 +68,7 @@ def login(redirect_to: str = '/') -> RedirectResponse | None:
         if(chequearContraseña(user, passwd)):
             username=getNombre(user)
             rol=getRol(user)
-            app.storage.user.update(username=username, authenticated=True, rol=rol)
+            app.storage.user.update(username=username, authenticated=True, dni=user, rol=rol)
             ui.navigate.to(f'/{rol}/home')
         else:
             ui.notify('Nombre de Usuario o Contraseña incorrectos', color='negative')
