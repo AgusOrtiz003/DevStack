@@ -60,3 +60,20 @@ def eliminar_cuenta(dni):
 def logout() -> None:
         app.storage.user.clear()
         ui.navigate.to('/login')
+        
+def cambiar_correo(correo,dni):
+    ''' Recibe por parametro un correo y DNI, procede a cambiar el correo a dicho DNI'''
+    
+    conexion = sqlite3.connect('./src/backend/bdd.db')
+    cur = conexion.cursor()
+    cur.execute("UPDATE Usuarios SET email = ? WHERE dni= ?", (correo,dni))
+    conexion.close()
+    
+    
+def chequear_correo(correo):
+    '''Devuelve verdadero si existe ya el correo electronico a una cuenta '''
+    conexion = sqlite3.connect('./src/backend/bdd.db')
+    cur = conexion.cursor()
+    cur.execute("SELECT email FROM Usuarios WHERE email=?", (correo,))
+    resultado = cur.fetchone()
+    return resultado is not None
