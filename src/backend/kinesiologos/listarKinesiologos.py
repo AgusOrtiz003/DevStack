@@ -27,10 +27,21 @@ def obtener_kinesiologos():
 
         cursor.execute("""
             SELECT
+
                 cuit,
+
                 nombre,
-                apellido
+
+                apellido,
+
+                horaDesde,
+
+                horaHasta,
+
+                tratamiento
+
             FROM Kinesiologos
+
             ORDER BY apellido, nombre
         """)
 
@@ -55,22 +66,46 @@ def tabla_kinesiologos():
     filas = obtener_kinesiologos()
 
     columnas = [
+
         {
             'name': 'cuit',
             'label': 'CUIT',
             'field': 'cuit',
             'align': 'left'
         },
+
         {
             'name': 'nombre',
             'label': 'Nombre',
             'field': 'nombre',
             'align': 'left'
         },
+
         {
             'name': 'apellido',
             'label': 'Apellido',
             'field': 'apellido',
+            'align': 'left'
+        },
+
+        {
+            'name': 'horaDesde',
+            'label': 'Hora Desde',
+            'field': 'horaDesde',
+            'align': 'left'
+        },
+
+        {
+            'name': 'horaHasta',
+            'label': 'Hora Hasta',
+            'field': 'horaHasta',
+            'align': 'left'
+        },
+
+        {
+            'name': 'tratamiento',
+            'label': 'Tratamiento',
+            'field': 'tratamiento',
             'align': 'left'
         },
     ]
@@ -80,18 +115,25 @@ def tabla_kinesiologos():
     for k in filas:
 
         rows.append({
+
             'cuit': k[0],
+
             'nombre': k[1],
+
             'apellido': k[2],
+
+            'horaDesde': k[3],
+
+            'horaHasta': k[4],
+
+            'tratamiento': k[5],
         })
 
-    tabla = ui.table(
+    return ui.table(
         columns=columnas,
         rows=rows,
         row_key='cuit'
     ).classes('w-full')
-
-    return tabla
 
 # =========================
 # TEST
