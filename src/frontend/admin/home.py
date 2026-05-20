@@ -3,32 +3,29 @@
 import pathlib
 import sys
 
-from fastapi import Request
-from fastapi.responses import RedirectResponse
-from starlette.middleware.base import BaseHTTPMiddleware
-from backend.kinesiologos.registrarKinesiologo import (
-    modal_registrar_kinesiologo
-)
+from nicegui import app, ui
+
 # =========================
 # ROOT DIR
 # =========================
 
 ROOT_DIR = pathlib.Path(__file__).resolve().parents[1]
-
 sys.path.append(str(ROOT_DIR))
 
 # =========================
 # IMPORTS
 # =========================
 
-from nicegui import app, ui
-
 from backend.kinesiologos.registrarKinesiologo import (
     modal_registrar_kinesiologo
 )
 
+from backend.kinesiologos.listarKinesiologos import (
+    tabla_kinesiologos
+)
+
 # =========================
-# HOME ADMIN
+# ADMIN HOME
 # =========================
 
 @ui.page('/Administrador/home')
@@ -41,16 +38,13 @@ def main_page() -> None:
     def logout() -> None:
 
         app.storage.user.clear()
-
         ui.navigate.to('/login')
 
     # =========================
-    # HEADER
+    # HEADER (RESTAURADO)
     # =========================
 
-    with ui.header().classes(
-        replace='row items-center'
-    ) as header:
+    with ui.header().classes('row items-center') as header:
 
         ui.button(
             on_click=lambda: left_drawer.toggle(),
@@ -59,31 +53,69 @@ def main_page() -> None:
 
         with ui.tabs() as tabs:
 
-            gestionar_kinesiologos_tab = ui.tab(
-                'Gestionar Kinesiologos'
-            )
-
-            ui.tab('B')
-
-            ui.tab('C')
+            tab_kines = ui.tab('Gestionar Kinesiologos')
+            tab_b = ui.tab('B')
+            tab_c = ui.tab('C')
 
     # =========================
     # FOOTER
     # =========================
 
     with ui.footer(value=False) as footer:
-
         ui.label('Footer')
 
     # =========================
     # DRAWER
     # =========================
 
-    with ui.left_drawer().classes(
-        'bg-blue-100'
-    ) as left_drawer:
-
+    with ui.left_drawer().classes('bg-blue-100') as left_drawer:
         ui.label('Side menu')
+
+    # =========================
+    # TAB PANELS
+    # =========================
+
+    with ui.tab_panels(tabs, value=tab_kines).classes('w-full'):
+
+        # =========================
+        # A: KINESIÓLOGOS
+        # =========================
+
+        with ui.tab_panel(tab_kines):
+
+            ui.label('Gestión de Kinesiólogos') \
+                .classes('text-3xl font-bold')
+
+            ui.separator()
+
+            # BOTÓN
+            ui.button(
+                'Registrar Kinesiólogo',
+                icon='person_add',
+                on_click=modal_registrar_kinesiologo
+            ).classes('mt-4 bg-primary text-white')
+
+            # LISTA RETRÁCTIL
+            with ui.expansion(
+                'Listar Kinesiólogos',
+                icon='groups'
+            ).classes('w-full mt-4'):
+
+                tabla_kinesiologos()
+
+        # =========================
+        # B
+        # =========================
+
+        with ui.tab_panel(tab_b):
+            ui.label('Content of B')
+
+        # =========================
+        # C
+        # =========================
+
+        with ui.tab_panel(tab_c):
+            ui.label('Content of C')
 
     # =========================
     # BOTÓN FLOTANTE
@@ -94,66 +126,7 @@ def main_page() -> None:
         x_offset=20,
         y_offset=20
     ):
-
         ui.button(
             on_click=footer.toggle,
             icon='contact_support'
         ).props('fab')
-
-    # =========================
-    # TAB PANELS
-    # =========================
-
-    with ui.tab_panels(
-        tabs,
-        value=gestionar_kinesiologos_tab
-    ).classes('w-full'):
-
-        # =========================
-        # GESTIONAR KINESIÓLOGOS
-        # =========================
-
-        with ui.tab_panel(
-            gestionar_kinesiologos_tab
-        ):
-
-            ui.label(
-                'Gestión de Kinesiólogos'
-            ).classes(
-                'text-3xl font-bold'
-            )
-
-            ui.separator()
-
-            ui.button(
-                'Registrar Kinesiólogo',
-                icon='person_add',
-                on_click=modal_registrar_kinesiologo
-            ).classes(
-                'mt-4'
-            )
-
-        # =========================
-        # TAB B
-        # =========================
-
-        with ui.tab_panel('B'):
-
-            ui.label('Content of B')
-
-        # =========================
-        # TAB C
-        # =========================
-
-        with ui.tab_panel('C'):
-
-            ui.label('Content of C')
-
-
-# =========================
-# RUN
-# =========================
-
-ui.run(
-    storage_secret='THIS_NEEDS_TO_BE_CHANGED'
-)
