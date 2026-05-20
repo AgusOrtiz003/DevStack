@@ -76,6 +76,6 @@ def cancelar_reserva(idReserva):
 
         idTurno = resultado[0]
         cursor.execute('UPDATE turnos SET cupoActual = MAX(cupoActual - 1, 0) WHERE idTurno=?',(idTurno,))
-        cursor.execute('DELETE FROM reservas WHERE idReserva=?',(idReserva,))
+        cursor.execute('UPDATE reservas SET estado = "Cancelado" WHERE idReserva=?',(idReserva,))
         conexion.commit()
     conexion.close()

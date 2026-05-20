@@ -27,6 +27,7 @@ from backend.login import chequearContraseña, getNombre, getRol
 # IMPORTAR HOME PACIENTE
 from frontend.pacientes.home import main_page as paciente_home
 from frontend.secretarias.home import main_page as secretaria_home
+from frontend.admin.home import main_page as administrador_home
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
