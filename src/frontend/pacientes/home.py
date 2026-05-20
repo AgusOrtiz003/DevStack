@@ -101,7 +101,7 @@ def main_page():
     # HEADER
     # =========================
 
-    with ui.header().classes('row items-center gap-4'):
+    with ui.header().classes(replace='row items-center gap-4'):
 
         with ui.tabs() as tabs:
 

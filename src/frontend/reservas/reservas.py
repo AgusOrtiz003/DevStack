@@ -14,7 +14,8 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
                         'const d = new Date(date.replace(/-/g, \'/\')); '
                         'const day = d.getDay(); '
                         'const today = new Date(); today.setHours(0,0,0,0); '
-                        'return day !== 0 && day !== 6 && new Date(date.replace(/-/g, \'/\')) > today; }'
+                        'const currentYear = new Date().getFullYear(); '
+                        'return day !== 0 && day !== 6 && d > today && d.getFullYear() === currentYear; }'
                         '"'
                     )
                 with ui.column().classes('w-3/5 gap-5'):
