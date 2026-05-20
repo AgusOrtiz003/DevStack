@@ -1,4 +1,5 @@
 import sqlite3
+from nicegui import ui,app
 
 def existe(dni):
     '''Dado un dni retorna si existe o no en la base de datos'''
@@ -22,7 +23,7 @@ def chequear_contraseña(dni, contraseña):
     cur.execute("SELECT contraseña FROM Usuarios WHERE dni=?", (dni,))
     resultado = cur.fetchone()
     conexion.close()
-    if resultado is not None and resultado[0] == contraseña:
+    if resultado is not None and str(resultado[0]) == contraseña:
         return True
     else:
         return False
@@ -45,3 +46,17 @@ def get_datos(dni):
         }
     else:
         return None
+    
+def eliminar_cuenta(dni):
+    
+    if(existe(dni)):
+        conexion = sqlite3.connect('./src/backend/bdd.db')
+        cur = conexion.cursor()
+        cur.execute("DELETE FROM Usuarios WHERE dni=?", (dni,))
+        conexion.commit()
+        conexion.close()
+        logout()
+
+def logout() -> None:
+        app.storage.user.clear()
+        ui.navigate.to('/login')
