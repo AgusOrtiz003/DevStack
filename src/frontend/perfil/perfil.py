@@ -31,12 +31,12 @@ def ver_perfil ():
             ui.label(f'Nombre : {usuario['nombre']}').classes('text-2xl font-bold text-blue-500 mb-4')
             ui.label(f'Apellido : {usuario['apellido']}').classes('text-2xl font-bold text-blue-500 mb-4')
             ui.label(f'DNI : {usuario['dni']}').classes('text-2xl font-bold text-blue-500 mb-4')
-            ui.label(f'Email : {usuario['email']}').classes('text-2xl font-bold text-blue-500 mb-4')
+            with ui.label(f'Email : {usuario['email']}').classes('text-2xl font-bold text-blue-500 mb-4'):
+                ui.button(icon ="edit").classes('ml-2')
             ui.label(f'Fecha de nacimiento : {usuario['fechaNac']}').classes('text-2xl font-bold text-blue-500 mb-4')
             ui.button('Eliminar cuenta',on_click= abrir_dialogo).classes(
             'bg-red-600 text-white mt-4 px-6 py-2 rounded-lg ')
-    
-
+       
 
  
             
