@@ -12,6 +12,7 @@ from nicegui import app, ui
 from frontend.reservas.reservas import pagina_reservas
 from frontend.reservas.listar_reservas import pagina_listar_reservas
 from frontend.perfil import perfil 
+from utils.fetchUsuarios import logout
 @ui.page('/Paciente/home')
 
 
@@ -44,7 +45,5 @@ def main_page() -> None:
         with ui.tab_panel('Mis reservas'):
             pagina_listar_reservas()
             
-def logout() -> None:
-        app.storage.user.clear()
-        ui.navigate.to('/login')
+
 ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
