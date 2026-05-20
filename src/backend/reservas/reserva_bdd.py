@@ -1,29 +1,29 @@
 import sqlite3
 
-def crearTablaReserva():
-    conexion = sqlite3.connect('src/backend/bdd.db')
-    cursor = conexion.cursor()
+def crear_tabla_reserva():
+    with sqlite3.connect('src/backend/bdd.db') as conexion:
+        cursor = conexion.cursor()
 
-    # Crear tabla reservas en la BDD
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS reservas (
-            idReserva INTEGER PRIMARY KEY AUTOINCREMENT,
-            dniPaciente INTEGER NOT NULL,
-            idTurno INTEGER NOT NULL,
-            obraSocial TEXT,
-            metodoPago TEXT,
-            estado TEXT NOT NULL DEFAULT 'Pendiente',
-            fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (idTurno) REFERENCES turnos(idTurno),
-            UNIQUE(dniPaciente, idTurno)
-        )
-    """)
+        # Crear tabla reservas en la BDD
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS reservas (
+                idReserva INTEGER PRIMARY KEY AUTOINCREMENT,
+                dniPaciente INTEGER NOT NULL,
+                idTurno INTEGER NOT NULL,
+                obraSocial TEXT,
+                metodoPago TEXT,
+                estado TEXT NOT NULL DEFAULT 'Pendiente',
+                fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (idTurno) REFERENCES turnos(idTurno),
+                UNIQUE(dniPaciente, idTurno)
+            )
+        """)
 
-    conexion.commit()
+        conexion.commit()
     conexion.close()
 ###################################################################################################
-def registrarReserva(fecha,hora,trat,obraSoc,metPag,dniPac):
-    with sqlite3.connect('src/backend/bdd.db',timeout=10) as conexion:
+def registrar_reserva(fecha,hora,trat,obraSoc,metPag,dniPac):
+    with sqlite3.connect('src/backend/bdd.db') as conexion:
         conexion.execute('PRAGMA foreign_keys = ON')
         cursor = conexion.cursor()
 
@@ -43,8 +43,9 @@ def registrarReserva(fecha,hora,trat,obraSoc,metPag,dniPac):
         cursor.execute('INSERT INTO reservas(dniPaciente, idTurno, obraSocial, metodoPago) VALUES(?,?,?,?)',(dniPac,idTurno,obraSoc,metPag))
         cursor.execute('UPDATE turnos SET cupoActual = cupoActual + 1 WHERE idTurno=?',(idTurno,))
         conexion.commit()
+    conexion.close()
 ###################################################################################################
-def listarReservas(dniPac):
+def listar_reservas(dniPac):
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
         cursor.execute('SELECT r.idReserva, r.obraSocial, r.metodoPago, r.estado, t.fecha, t.hora, t.tratamiento FROM reservas r INNER JOIN turnos t ON r.idTurno = t.idTurno WHERE dniPaciente=? AND estado="Pendiente"',(dniPac,))
@@ -64,12 +65,17 @@ def listarReservas(dniPac):
         return reservas
     conexion.close()
 ###################################################################################################
-def cancelarReserva(idReserva):
+def cancelar_reserva(idReserva):
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
         cursor.execute('SELECT idTurno FROM reservas WHERE idReserva=?',(idReserva,))
-        idTurno = cursor.fetchone()
-        cursor.execute('UPDATE turnos SET cupoActual = cupoActual - 1 WHERE idTurno=?',(idTurno))
+        resultado = cursor.fetchone()
+
+        if resultado is None:
+            return
+
+        idTurno = resultado[0]
+        cursor.execute('UPDATE turnos SET cupoActual = MAX(cupoActual - 1, 0) WHERE idTurno=?',(idTurno,))
         cursor.execute('DELETE FROM reservas WHERE idReserva=?',(idReserva,))
         conexion.commit()
     conexion.close()

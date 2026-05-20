@@ -11,6 +11,7 @@ from nicegui import app, ui
 from backend.registro import registrar
 from backend.login import chequearContraseña, getNombre, getRol
 from frontend.pacientes.home import main_page as paciente_home
+from frontend.secretarias.home import main_page as secretaria_home
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 

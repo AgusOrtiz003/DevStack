@@ -3,7 +3,6 @@ import sqlite3
 ##ESTO SIRVE PARA VER SI EL TURNO ESTÁ DISPONIBLE O SI ESTÁ COMPLETAMENTE OCUPADO
 DB_PATH = 'src/backend/bdd.db'
 
-
 def verificar_cupo_disponible(id_turno):
     conexion = sqlite3.connect(DB_PATH)
 

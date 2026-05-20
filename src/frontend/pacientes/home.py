@@ -26,12 +26,10 @@ def main_page() -> None:
             ui.button(icon='account_circle').props('flat color=white round')
             ui.button(on_click=logout, icon='logout').props('flat color=white round')
 
-    with ui.footer(value=False) as footer:
-        ui.label('Footer')
-
     with ui.tab_panels(tabs, value='Inicio').classes('w-full'):
-        with ui.tab_panel('Inicio'):
-            ui.label('Hola!')
+        with ui.tab_panel('Inicio').classes('items-center'):
+            with ui.column().classes('w-full items-center justify-center'):
+                ui.image('src/frontend/icons/kinePro-logo.png').classes('w-110')
         with ui.tab_panel('Mis reservas'):
             tabla_reservas = pagina_listar_reservas()
         with ui.tab_panel('Reservar turno'):

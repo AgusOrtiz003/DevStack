@@ -1,27 +1,12 @@
 import sqlite3
 from datetime import datetime, timedelta
 
-DB_PATH = 'src/backend/bdd.db'
-
-
-def turno_pendiente(id_turno):
-    conexion = sqlite3.connect(DB_PATH)
-
+def turno_pendiente(id_turno, conexion):
     cursor = conexion.cursor()
 
-    cursor.execute("""
-        SELECT fecha, hora
-        FROM turnos
-        WHERE id = ?
-    """, (id_turno,))
+    cursor.execute('SELECT fecha, hora FROM turnos WHERE idTurno = ?', (id_turno,))
 
     resultado = cursor.fetchone()
-
-    conexion.close()
-
-    # Si el turno no existe
-    if resultado is None:
-        return False
 
     fecha, hora = resultado
 

@@ -1,20 +1,27 @@
 from nicegui import ui, app
-from backend.reservas.reserva_bdd import listarReservas, cancelarReserva
+from backend.reservas.reserva_bdd import listar_reservas, cancelar_reserva
 # Página de listado de reservas del paciente
 def pagina_listar_reservas():
 
     def modificarReserva(idReserva):
         ui.notify('Modificación exitosa')
 
-    def cancelar_y_actualizar(idReserva):
-        cancelarReserva(idReserva)
-        reservas_actualizadas = listarReservas(dniPaciente)
-        tabla.rows = reservas_actualizadas
-        tabla.update()
-        ui.notify('Reserva cancelada', color='positive')
+    async def cancelar_y_actualizar(idReserva):
+        with ui.dialog() as dialog, ui.card().classes('w-100'):
+            ui.label('¿Desea cancelar la reserva?')
+            ui.separator()
+            with ui.row().classes('w-full justify-center gap-2'):
+                ui.button('Si', on_click=lambda: dialog.submit(True)).props('color=red')
+                ui.button('No', on_click=lambda: dialog.submit(False)).props('flat')
+        if await dialog:
+            cancelar_reserva(idReserva)
+            reservas_actualizadas = listar_reservas(dniPaciente)
+            tabla.rows = reservas_actualizadas
+            tabla.update()
+            ui.notify('Reserva cancelada', color='green')
 
     dniPaciente = app.storage.user.get('dni')
-    reservas=listarReservas(dniPaciente)
+    reservas=listar_reservas(dniPaciente)
     # Parte central
     tabla = ui.table(
     columns=[
@@ -47,14 +54,6 @@ def pagina_listar_reservas():
                 <template v-else>
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <q-btn
-                            icon="edit"
-                            color="primary"
-                            flat
-                            round
-                            dense
-                            @click="$parent.$emit('modificar', props.row.idReserva)"
-                        />
-                        <q-btn
                             icon="delete"
                             color="negative"
                             flat
@@ -69,7 +68,6 @@ def pagina_listar_reservas():
         </q-tr>
     ''')
 
-    tabla.on('modificar', lambda e: modificarReserva(e.args))
     tabla.on('eliminar', lambda e: cancelar_y_actualizar(e.args))
 
     return tabla
