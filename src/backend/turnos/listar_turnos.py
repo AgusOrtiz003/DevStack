@@ -4,7 +4,7 @@ from backend.turnos.turno_pendiente import turno_pendiente
 def listar_los_turnos():
     with sqlite3.connect('./src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
-        cursor.execute('SELECT idTurno, fecha , hora, tratamiento, cupoActual, cupoMaximo FROM turnos WHERE cupoActual < cupoMaximo')
+        cursor.execute('SELECT idTurno, fecha , hora, tratamiento, cupoActual, cupoMaximo FROM turnos WHERE cupoActual > 0')
         resultados = cursor.fetchall()
         turnos = []
         for resul in resultados:
@@ -16,7 +16,7 @@ def listar_los_turnos():
                     'cupoActual': resul[4],
                     'cupoMaximo': resul[5],
                 }
-            if (turno_pendiente(resul[0]) & resul[4] > 0):
+            if (turno_pendiente(resul[0])):
                 turnos.append(turno)
         return turnos
     conexion.close()
