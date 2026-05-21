@@ -10,6 +10,7 @@ from nicegui import app, ui
 # =========================
 
 ROOT_DIR = pathlib.Path(__file__).resolve().parents[1]
+
 sys.path.append(str(ROOT_DIR))
 
 # =========================
@@ -21,7 +22,11 @@ from backend.kinesiologos.registrarKinesiologo import (
 )
 
 from backend.kinesiologos.listarKinesiologos import (
-    tabla_kinesiologos
+    obtener_kinesiologos
+)
+
+from backend.kinesiologos.buscarKinesiologo import (
+    modal_buscar_kinesiologos
 )
 
 # =========================
@@ -38,13 +43,14 @@ def main_page() -> None:
     def logout() -> None:
 
         app.storage.user.clear()
+
         ui.navigate.to('/login')
 
     # =========================
-    # HEADER (RESTAURADO)
+    # HEADER
     # =========================
 
-    with ui.header().classes('row items-center') as header:
+    with ui.header().classes('row items-center'):
 
         ui.button(
             on_click=lambda: left_drawer.toggle(),
@@ -53,8 +59,12 @@ def main_page() -> None:
 
         with ui.tabs() as tabs:
 
-            tab_kines = ui.tab('Gestionar Kinesiologos')
+            tab_kines = ui.tab(
+                'Gestionar Kinesiologos'
+            )
+
             tab_b = ui.tab('B')
+
             tab_c = ui.tab('C')
 
     # =========================
@@ -62,59 +72,185 @@ def main_page() -> None:
     # =========================
 
     with ui.footer(value=False) as footer:
+
         ui.label('Footer')
 
     # =========================
     # DRAWER
     # =========================
 
-    with ui.left_drawer().classes('bg-blue-100') as left_drawer:
+    with ui.left_drawer().classes(
+        'bg-blue-100'
+    ) as left_drawer:
+
         ui.label('Side menu')
 
     # =========================
     # TAB PANELS
     # =========================
 
-    with ui.tab_panels(tabs, value=tab_kines).classes('w-full'):
+    with ui.tab_panels(
+        tabs,
+        value=tab_kines
+    ).classes('w-full'):
 
-        # =========================
-        # A: KINESIÓLOGOS
-        # =========================
+        # =====================================================
+        # TAB KINESIÓLOGOS
+        # =====================================================
 
         with ui.tab_panel(tab_kines):
 
-            ui.label('Gestión de Kinesiólogos') \
-                .classes('text-3xl font-bold')
+            ui.label(
+                'Gestión de Kinesiólogos'
+            ).classes(
+                'text-3xl font-bold'
+            )
 
             ui.separator()
 
-            # BOTÓN
+            # =========================
+            # BOTÓN REGISTRAR
+            # =========================
+
             ui.button(
                 'Registrar Kinesiólogo',
                 icon='person_add',
                 on_click=modal_registrar_kinesiologo
-            ).classes('mt-4 bg-primary text-white')
+            ).classes(
+                'mt-4 bg-primary text-white'
+            )
 
-            # LISTA RETRÁCTIL
+            # =========================
+            # LISTAR KINESIÓLOGOS
+            # =========================
+
             with ui.expansion(
-                'Listar Kinesiólogos',
+                'Listar Kinesiologos',
                 icon='groups'
             ).classes('w-full mt-4'):
 
-                tabla_kinesiologos()
+                # =====================
+                # CONTENEDOR TABLA
+                # =====================
 
-        # =========================
-        # B
-        # =========================
+                tabla_container = ui.column().classes(
+                    'w-full'
+                )
+
+                # =====================
+                # RENDER TABLA
+                # =====================
+
+                def renderizar_tabla(datos):
+
+                    tabla_container.clear()
+
+                    columnas = [
+
+                        {
+                            'name': 'cuit',
+                            'label': 'CUIT',
+                            'field': 'cuit',
+                            'align': 'left'
+                        },
+
+                        {
+                            'name': 'nombre',
+                            'label': 'Nombre',
+                            'field': 'nombre',
+                            'align': 'left'
+                        },
+
+                        {
+                            'name': 'apellido',
+                            'label': 'Apellido',
+                            'field': 'apellido',
+                            'align': 'left'
+                        },
+
+                        {
+                            'name': 'horaDesde',
+                            'label': 'Hora Desde',
+                            'field': 'horaDesde',
+                            'align': 'left'
+                        },
+
+                        {
+                            'name': 'horaHasta',
+                            'label': 'Hora Hasta',
+                            'field': 'horaHasta',
+                            'align': 'left'
+                        },
+
+                        {
+                            'name': 'tratamiento',
+                            'label': 'Tratamiento',
+                            'field': 'tratamiento',
+                            'align': 'left'
+                        },
+                    ]
+
+                    rows = []
+
+                    for k in datos:
+
+                        rows.append({
+
+                            'cuit': k[0],
+
+                            'nombre': k[1],
+
+                            'apellido': k[2],
+
+                            'horaDesde': k[3],
+
+                            'horaHasta': k[4],
+
+                            'tratamiento': k[5],
+                        })
+
+                    with tabla_container:
+
+                        ui.table(
+                            columns=columnas,
+                            rows=rows,
+                            row_key='cuit'
+                        ).classes('w-full')
+
+                # =====================
+                # BOTÓN BUSCAR
+                # =====================
+
+                ui.button(
+                    'Buscar / Filtrar',
+                    icon='search',
+                    on_click=lambda: modal_buscar_kinesiologos(
+                        renderizar_tabla
+                    )
+                ).classes('mb-4')
+
+                # =====================
+                # TABLA INICIAL
+                # =====================
+
+                renderizar_tabla(
+                    obtener_kinesiologos()
+                )
+
+        # =====================================================
+        # TAB B
+        # =====================================================
 
         with ui.tab_panel(tab_b):
+
             ui.label('Content of B')
 
-        # =========================
-        # C
-        # =========================
+        # =====================================================
+        # TAB C
+        # =====================================================
 
         with ui.tab_panel(tab_c):
+
             ui.label('Content of C')
 
     # =========================
@@ -126,6 +262,7 @@ def main_page() -> None:
         x_offset=20,
         y_offset=20
     ):
+
         ui.button(
             on_click=footer.toggle,
             icon='contact_support'
