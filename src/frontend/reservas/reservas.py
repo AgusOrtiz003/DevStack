@@ -7,33 +7,6 @@ import sqlite3
 
 # Página de registar reserva
 def pagina_reservas(tabs,reservas_tab,tabla_reservas):
-    def formularioReserva():
-        with ui.card().classes('w-150 p-6'):
-            with ui.row().classes('w-full no-wrap gap-8 items-start'):
-                with ui.column().classes('w-full items-center'):
-                    fecha = ui.date().props(
-                        ':options="date => { '
-                        'const d = new Date(date.replace(/-/g, \'/\')); '
-                        'const day = d.getDay(); '
-                        'const today = new Date(); today.setHours(0,0,0,0); '
-                        'const currentYear = new Date().getFullYear(); '
-                        'return day !== 0 && day !== 6 && d > today && d.getFullYear() === currentYear; }'
-                        '"'
-                    )
-                with ui.column().classes('w-3/5 gap-5'):
-                    hora = ui.select(options=horas, label='Horario').classes('w-full')
-                    obraSocial = ui.select(options=obrasSociales,label='Obra Social').classes('w-full')
-                    metPago = ui.select(options=metodosPago,label='Método de Pago').classes('w-full')
-                    tratamiento = ui.select(options=tratamientos,label='Tratamiento').classes('w-full')
-            ui.button('Reservar turno',icon='event_available',
-                      on_click=lambda: crearReserva(fecha,
-                                                    hora,
-                                                    tratamiento,
-                                                    obraSocial,
-                                                    metPago,
-                                                    dniPaciente)
-                                                    ).classes('w-full text-lg')
-    
     def crearReserva(fecha,hora,trat,obraSoc,metPago,dniPac):
         if not fecha.value or not hora.value or not obraSoc.value or not metPago.value or not trat.value:
             ui.notify('Ingrese todos los datos', color='red-500')
@@ -64,4 +37,22 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
 ####################################### PÁGINA ##################################################
     # Parte central
     with ui.row().classes('w-full justify-center'):
-        formularioReserva()
+        with ui.card().classes('w-150 p-6'):
+            with ui.row().classes('w-full no-wrap gap-8 items-start'):
+                with ui.column().classes('w-full items-center'):
+                    fecha = ui.date().props(
+                        ':options="date => { '
+                        'const d = new Date(date.replace(/-/g, \'/\')); '
+                        'const day = d.getDay(); '
+                        'const today = new Date(); today.setHours(0,0,0,0); '
+                        'const currentYear = new Date().getFullYear(); '
+                        'return day !== 0 && day !== 6 && d > today && d.getFullYear() === currentYear; }'
+                        '"'
+                    )
+                with ui.column().classes('w-full gap-5 self-stretch'):
+                    hora = ui.select(options=horas, label='Horario').classes('w-full').props('outlined dense')
+                    obraSocial = ui.select(options=obrasSociales,label='Obra Social').classes('w-full').props('outlined dense')
+                    metPago = ui.select(options=metodosPago,label='Método de Pago').classes('w-full').props('outlined dense')
+                    tratamiento = ui.select(options=tratamientos,label='Tratamiento').classes('w-full').props('outlined dense')
+                    ui.button('Reservar turno',icon='event_available',
+                        on_click=lambda: crearReserva(fecha,hora,tratamiento,obraSocial,metPago,dniPaciente)).classes('w-full mt-auto h-14')

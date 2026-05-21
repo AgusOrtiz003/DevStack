@@ -6,7 +6,7 @@ def crearTablaTurno():
 
         # Crear tabla turnos en la BDD
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS turnos (
+            CREATE TABLE IF NOT EXISTS Turnos (
                 idTurno INTEGER PRIMARY KEY AUTOINCREMENT,
                 fecha DATE NOT NULL,
                 hora TIME NOT NULL,
@@ -19,4 +19,3 @@ def crearTablaTurno():
         """)
         conexion.commit()
     conexion.close()
-###################################################################################################

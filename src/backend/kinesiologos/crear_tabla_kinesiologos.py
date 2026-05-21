@@ -1,17 +1,10 @@
-#!/usr/bin/env python3
-
-import pathlib
 import sqlite3
 
 # =========================
 # RUTA BASE
 # =========================
 
-BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
-
-DB_PATH = BASE_DIR / 'backend' / 'bdd.db'
-
-print(f'Usando base de datos: {DB_PATH}')
+DB_PATH = 'src/backend/bdd.db'
 
 # =========================
 # REGLAS DE NEGOCIO
@@ -42,11 +35,8 @@ def crear_tabla_kinesiologos():
 
     try:
 
-        conn = sqlite3.connect(str(DB_PATH))
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-
-        # ⚠️ RECREAR TABLA PARA APLICAR CAMBIOS
-        cursor.execute("DROP TABLE IF EXISTS Kinesiologos")
 
         cursor.execute("""
             CREATE TABLE Kinesiologos (
@@ -63,7 +53,9 @@ def crear_tabla_kinesiologos():
 
                 horaHasta TIME NOT NULL,
 
-                tratamiento TEXT NOT NULL
+                tratamiento TEXT NOT NULL,
+                       
+                fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
