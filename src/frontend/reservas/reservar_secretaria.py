@@ -1,12 +1,13 @@
-from nicegui import ui, app
+from nicegui import ui
+
+from nicegui import ui
 from datetime import date, timedelta
 from backend.reservas.registrar_reserva import registrar_reserva
-from backend.reservas.listar_reservas import listar_reservas
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 import sqlite3
 
 # Página de registar reserva
-def pagina_reservas(tabs,reservas_tab,tabla_reservas):
+def pagina_reservar_secretaria(tabs,inicio_tab):
     def formularioReserva():
         with ui.card().classes('w-150 p-6'):
             with ui.row().classes('w-full no-wrap gap-8 items-start'):
@@ -21,6 +22,7 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
                         '"'
                     )
                 with ui.column().classes('w-3/5 gap-5'):
+                    dniPaciente = ui.input(label='Dni Paciente', placeholder='47310516',validation={'DNI no válido': lambda value: len(value) == 8}).classes('w-full')
                     hora = ui.select(options=horas, label='Horario').classes('w-full')
                     obraSocial = ui.select(options=obrasSociales,label='Obra Social').classes('w-full')
                     metPago = ui.select(options=metodosPago,label='Método de Pago').classes('w-full')
@@ -31,32 +33,31 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
                                                     tratamiento,
                                                     obraSocial,
                                                     metPago,
-                                                    dniPaciente)
+                                                    dniPaciente.value)
                                                     ).classes('w-full text-lg')
     
     def crearReserva(fecha,hora,trat,obraSoc,metPago,dniPac):
-        if not fecha.value or not hora.value or not obraSoc.value or not metPago.value or not trat.value:
+        if not dniPac or not fecha.value or not hora.value or not obraSoc.value or not metPago.value or not trat.value:
             ui.notify('Ingrese todos los datos', color='red-500')
             return
         try:
             registrar_reserva(fecha.value,hora.value,trat.value,obraSoc.value,metPago.value,dniPac)
-            tabla_reservas.rows = listar_reservas(dniPac)
-            tabla_reservas.update()
             ui.notify('Turno reservado con éxito',color='green')
+            dniPac = None
             fecha.set_value(None)
             hora.set_value(None)
             obraSoc.set_value(None)
             metPago.set_value(None)
             trat.set_value(None)
-            tabs.set_value(reservas_tab)
+            tabs.set_value(inicio_tab)
         except sqlite3.IntegrityError:
             ui.notify('Turno ya reservado', color='red-500')
         except TurnoLlenoException:
-            print(TurnoLlenoException.args)
             ui.notify('Turno lleno',color='red-500')
             # MOSTRAR BOTÓN 'AGREGAR A LISTA DE ESPERA?'
+        except ValueError:
+            ui.notify('El DNI no está registrado', color='red-500')
 ### MOVER CONSTANTES A OTRO LADO
-    dniPaciente = app.storage.user.get('dni')
     tratamientos=['Tren superior','Tren medio','Tren inferior']
     obrasSociales=['IOMA','OSDE','Ninguna']
     metodosPago=['Efectivo','Transferencia','Billetera virtual']

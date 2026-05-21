@@ -1,5 +1,7 @@
 from nicegui import ui, app
-from backend.reservas.reserva_bdd import listar_reservas, cancelar_reserva
+from backend.reservas.listar_reservas import listar_reservas
+from backend.reservas.cancelar_reserva import cancelar_reserva
+
 # Página de listado de reservas del paciente
 def pagina_listar_reservas():
 

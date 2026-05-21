@@ -1,7 +1,8 @@
 from nicegui import ui
 from backend.turnos.listar_turnos import listar_los_turnos
+from frontend.reservas.listar_reservas_turno import pagina_listar_reservas_secretaria
 import sqlite3
-# Página de listar turnos disponibles
+# Página de listar turnos con reservas
 def pagina_listar_turnos_pendientes():
      
     def actualizar_listado():
@@ -23,5 +24,20 @@ def pagina_listar_turnos_pendientes():
     ],
     rows=turnos,
     row_key='idReserva').classes('w-full overflow-hidden shadow-md')
+
+    tabla.add_slot('body-cell-accion', r'''
+        <q-td :props="props">
+            <q-btn
+                icon="visibility"
+                color="primary"
+                flat
+                round
+                dense
+                @click="$parent.$emit('ver_reservas', props.row.idTurno)"
+            />
+        </q-td>
+    ''')
+
+    tabla.on('ver_reservas',lambda e: ui.navigate.to(f'/listadoReservas/{e.args}'))
 
     return tabla

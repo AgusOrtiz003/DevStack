@@ -1,0 +1,2 @@
+class TurnoLlenoException(Exception):
+    pass

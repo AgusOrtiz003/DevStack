@@ -2,7 +2,7 @@
 
 from nicegui import ui
 
-from backend.kinesiologos.listarKinesiologos import (
+from backend.kinesiologos.listar_kinesiologos import (
     obtener_kinesiologos
 )
 

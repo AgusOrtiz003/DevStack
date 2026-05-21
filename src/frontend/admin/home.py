@@ -17,15 +17,15 @@ sys.path.append(str(ROOT_DIR))
 # IMPORTS
 # =========================
 
-from backend.kinesiologos.registrarKinesiologo import (
+from backend.kinesiologos.registar_kinesiologo import (
     modal_registrar_kinesiologo
 )
 
-from backend.kinesiologos.listarKinesiologos import (
+from backend.kinesiologos.listar_kinesiologos import (
     obtener_kinesiologos
 )
 
-from backend.kinesiologos.buscarKinesiologo import (
+from backend.kinesiologos.buscar_kinesiologo import (
     modal_buscar_kinesiologos
 )
 
