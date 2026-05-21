@@ -21,6 +21,10 @@ from backend.kinesiologos.registar_kinesiologo import (
     modal_registrar_kinesiologo
 )
 
+from backend.kinesiologos.borrar_kinesiologo import (
+    modal_borrar_kinesiologo
+)
+
 from backend.kinesiologos.listar_kinesiologos import (
     obtener_kinesiologos
 )
@@ -118,6 +122,19 @@ def main_page() -> None:
                 on_click=modal_registrar_kinesiologo
             ).classes(
                 'mt-4 bg-primary text-white'
+            )
+
+            # =========================
+            # BOTÓN BORRAR
+            # =========================
+
+            ui.button(
+                'Borrar Kinesiólogo',
+                icon='delete',
+                color='negative',
+                on_click=modal_borrar_kinesiologo
+            ).classes(
+                'mt-2 text-white'
             )
 
             # =========================
