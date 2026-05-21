@@ -1,46 +1,180 @@
 #!/usr/bin/env python3
+
 import pathlib
-import sys
 import sqlite3
-from fastapi import Request
-from fastapi.responses import RedirectResponse
-from starlette.middleware.base import BaseHTTPMiddleware
-src_path=pathlib.Path(__file__).resolve().parent.parent
-sys.path.append(str(src_path))
+
 from nicegui import app, ui
 
+from frontend.reservas.reservas import pagina_reservas
+from frontend.reservas.listar_reservas import pagina_listar_reservas
+
+# =========================
+# BASE DIR
+# =========================
+
+BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
+
+DB_PATH = BASE_DIR / 'backend' / 'bdd.db'
+
+# =========================
+# OBTENER USUARIO
+# =========================
+
+def obtener_usuario(dni):
+
+    try:
+
+        conn = sqlite3.connect(str(DB_PATH))
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                dni,
+                nombre,
+                apellido,
+                email,
+                fechaNac,
+                rol
+            FROM Usuarios
+            WHERE dni = ?
+        """, (dni,))
+
+        usuario = cursor.fetchone()
+
+        conn.close()
+
+        return usuario
+
+    except Exception as e:
+
+        print('ERROR SQLITE:', e)
+
+        return None
+
+
+# =========================
+# HOME PACIENTE
+# =========================
+
 @ui.page('/Paciente/home')
-def main_page() -> None:
-    def logout() -> None:
+def main_page():
+
+    # =========================
+    # SESIÓN
+    # =========================
+
+    dni_usuario = app.storage.user.get('dni')
+
+    usuario = None
+
+    if dni_usuario:
+
+        usuario = obtener_usuario(dni_usuario)
+
+    # =========================
+    # LOGOUT
+    # =========================
+
+    def logout():
+
         app.storage.user.clear()
+
         ui.navigate.to('/login')
 
-    with ui.column().classes('absolute-center items-center'):
-        ui.label(f'Bienvenido {app.storage.user["username"]}! down').classes('text-2xl')
-        ui.button(on_click=logout, icon='logout').props('outline round')
-        
-    with ui.header().classes(replace='row items-center') as header:
-        ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
+    # =========================
+    # DATOS USUARIO
+    # =========================
+
+    nombre = ''
+    apellido = ''
+    email = ''
+    fechaNac = ''
+    rol = ''
+    dni = ''
+
+    if usuario:
+
+        dni, nombre, apellido, email, fechaNac, rol = usuario
+
+    # =========================
+    # HEADER
+    # =========================
+
+    with ui.header().classes(replace='row items-center gap-4'):
+
         with ui.tabs() as tabs:
-            ui.tab('A')
-            ui.tab('B')
-            ui.tab('C')
 
-    with ui.footer(value=False) as footer:
-        ui.label('Footer')
+            inicio_tab = ui.tab(
+                'Inicio',
+                icon='home'
+            )
 
-    with ui.left_drawer().classes('bg-blue-100') as left_drawer:
-        ui.label('Side menu')
+            reservas_tab = ui.tab(
+                'Mis reservas',
+                icon='calendar_month'
+            )
 
-    with ui.page_sticky(position='bottom-right', x_offset=20, y_offset=20):
-        ui.button(on_click=footer.toggle, icon='contact_support').props('fab')
+            reservar_tab = ui.tab(
+                'Reservar turno',
+                icon='event'
+            )
 
-    with ui.tab_panels(tabs, value='A').classes('w-full'):
-        with ui.tab_panel('A'):
-            ui.label('Content of A')
-        with ui.tab_panel('B'):
-            ui.label('Content of B')
-        with ui.tab_panel('C'):
-            ui.label('Content of C')
+        # =========================
+        # BOTONES DERECHA
+        # =========================
 
-ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
+        with ui.row().classes('ml-auto items-center'):
+
+            # =========================
+            # MENU USUARIO
+            # =========================
+
+            with ui.button(
+                icon='account_circle'
+            ).props('flat round color=white'):
+
+                with ui.menu():
+
+                    ui.label(
+                        f'{nombre} {apellido}'
+                    ).classes('text-lg font-bold')
+
+                    ui.separator()
+
+                    ui.label(f'DNI: {dni}')
+                    ui.label(f'Email: {email}')
+                    ui.label(f'Fecha de nacimiento: {fechaNac}')
+                    ui.label(f'Rol: {rol}')
+
+            # =========================
+            # LOGOUT
+            # =========================
+
+            ui.button(
+                icon='logout',
+                on_click=logout
+            ).props('flat round color=white')
+
+    # =========================
+    # FOOTER
+    # =========================
+
+    with ui.tab_panels(tabs, value='Inicio').classes('w-full'):
+        with ui.tab_panel('Inicio').classes('items-center'):
+            with ui.column().classes('w-full items-center justify-center'):
+                ui.image('src/frontend/icons/kinePro-logo.png').classes('w-110')
+        with ui.tab_panel('Mis reservas'):
+            tabla_reservas = pagina_listar_reservas()
+
+        # =========================
+        # RESERVAR
+        # =========================
+
+        with ui.tab_panel(reservar_tab):
+
+            pagina_reservas(
+                tabs,
+                reservas_tab,
+                tabla_reservas
+            )
