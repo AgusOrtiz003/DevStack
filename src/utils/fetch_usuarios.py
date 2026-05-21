@@ -27,7 +27,7 @@ def chequear_contraseña(dni, contraseña):
         return True
     else:
         return False
-    
+
 def get_datos(dni):
     '''Dado un dni, retorna un diccionario con los datos del usuario'''
     conexion = sqlite3.connect('./src/backend/bdd.db')

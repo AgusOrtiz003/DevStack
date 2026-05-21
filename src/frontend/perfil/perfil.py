@@ -1,12 +1,11 @@
 from nicegui import app,ui
 import utils.imports as imports 
 from pacientes.home import logout 
-from utils import fetchUsuarios
-
+from src.utils import fetch_usuarios
 
 @ui.page('/ver_perfil')
 def ver_perfil ():
-    usuario = fetchUsuarios.get_datos(app.storage.user["dni"])
+    usuario = fetch_usuarios.get_datos(app.storage.user["dni"])
 
     with ui.dialog() as dialog, ui.card():
         ui.label('¿Seguro que querés eliminar tu cuenta?').classes('text-lg')
@@ -14,7 +13,7 @@ def ver_perfil ():
         with ui.row().classes('justify-end w-full gap-2 mt-4'):
             ui.button('Cancelar', on_click=dialog.close)
 
-            ui.button('Eliminar',on_click=lambda: (fetchUsuarios.eliminar_cuenta(usuario["dni"]),dialog.close())).classes('bg-red-600 text-white')
+            ui.button('Eliminar',on_click=lambda: (fetch_usuarios.eliminar_cuenta(usuario["dni"]),dialog.close())).classes('bg-red-600 text-white')
     
     def abrir_dialogo():
         dialog.open()

@@ -12,12 +12,9 @@ from nicegui import app, ui
 from frontend.reservas.reservas import pagina_reservas
 from frontend.reservas.listar_reservas import pagina_listar_reservas
 from frontend.perfil import perfil 
-from utils.fetchUsuarios import logout
+from src.utils.fetch_usuarios import logout
+
 @ui.page('/Paciente/home')
-
-
-
-        
 def main_page() -> None:
     
     with ui.header().classes(replace='row items-center justify-between gap-4') as header:
@@ -43,7 +40,8 @@ def main_page() -> None:
         with ui.tab_panel('Reservar turno'):
             pagina_reservas()
         with ui.tab_panel('Mis reservas'):
-            pagina_listar_reservas()
+            with ui.column().classes('w-full h-screen items-center justify-center'):
+                pagina_listar_reservas()
             
 
 ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')

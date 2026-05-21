@@ -1,5 +1,5 @@
 import sqlite3
-from utils.fetchUsuarios import existe
+from src.utils.fetch_usuarios import existe
 def registrar(dni, paswd, nom, ap, mail, fnac):
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
