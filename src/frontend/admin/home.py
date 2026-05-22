@@ -25,14 +25,8 @@ from backend.admin.listar_usuarios import tabla_usuarios
 @ui.page('/Administrador/home')
 def main_page() -> None:
 
-    with ui.header().classes('row items-center justify-between'):
-
+    with ui.header().classes(replace='row items-center justify-between'):
         with ui.row().classes('items-center'):
-            ui.button(
-                icon='menu',
-                on_click=lambda: left_drawer.toggle()
-            ).props('flat color=white round')
-
             with ui.tabs() as tabs:
                 ui.tab('Inicio', icon='home')
                 ui.tab('Kinesiologos', icon='groups')
@@ -52,25 +46,15 @@ def main_page() -> None:
                 icon='logout'
             ).props('flat color=white round')
 
-    with ui.left_drawer().classes('bg-blue-100') as left_drawer:
-        ui.label('Side menu')
-
-    with ui.footer(value=False) as footer:
-        ui.label('Footer')
-
     with ui.tab_panels(tabs, value='Inicio').classes('w-full'):
-
-        with ui.tab_panel('Inicio'):
-            ui.label('Hola!').classes('text-2xl font-bold')
-
+        with ui.tab_panel('Inicio').classes('items-center'):
+            with ui.column().classes('w-full items-center justify-center'):
+                ui.image('src/frontend/icons/kinePro-logo.png').classes('w-110')
         with ui.tab_panel('Kinesiologos'):
-
             ui.label(
                 'Gestión de Kinesiólogos'
             ).classes('text-3xl font-bold')
-
             ui.separator()
-
             with ui.row():
                 ui.button(
                     'Registrar',
@@ -155,17 +139,3 @@ def main_page() -> None:
         ):
 
             cambiar_rol_page()
-
-    with ui.page_sticky(
-        position='bottom-right',
-        x_offset=20,
-        y_offset=20
-    ):
-
-        ui.button(
-            on_click=footer.toggle,
-            icon='contact_support'
-        ).props('fab')
-
-
-ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
