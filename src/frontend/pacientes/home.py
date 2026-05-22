@@ -56,6 +56,8 @@ def obtener_usuario(dni):
 # =========================
 # HOME PACIENTE
 # =========================
+from frontend.perfil import perfil 
+from src.utils.fetch_usuarios import logout
 
 @ui.page('/Paciente/home')
 def main_page():
