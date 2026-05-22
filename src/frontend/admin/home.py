@@ -8,7 +8,6 @@ sys.path.append(str(src_path))
 
 from nicegui import app, ui
 
-from frontend.admin.cambiar_rol import cambiar_rol_page
 from frontend.perfil import perfil
 
 from src.utils.fetch_usuarios import logout
@@ -31,7 +30,6 @@ def main_page() -> None:
                 ui.tab('Inicio', icon='home')
                 ui.tab('Kinesiologos', icon='groups')
                 ui.tab('Usuarios', icon='admin_panel_settings')
-                ui.tab('Cambiar Rol', icon='event')
 
         with ui.row():
             ui.button(
@@ -131,11 +129,3 @@ def main_page() -> None:
             ).classes('w-full mt-4'):
 
                 tabla_usuarios()
-
-        with ui.tab_panel('Cambiar Rol').classes(
-            'w-full items-center justify-center'
-        ).style(
-            'height: calc(100vh - 70px);'
-        ):
-
-            cambiar_rol_page()
