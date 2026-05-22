@@ -23,7 +23,7 @@ def main_page() -> None:
         with ui.tabs() as tabs:
             inicio_tab = ui.tab('Inicio',icon='home')
             turnosP_tab = ui.tab('Turnos pendientes',icon='calendar_month')
-            reservar_tab = ui.tab('Reservar turno',icon='event_available')
+            reservar_tab = ui.tab('Reservar turno',icon='event')
         with ui.row().classes('ml-auto'):
             ui.button(icon='account_circle').props('flat color=white round')
             ui.button(on_click=logout, icon='logout').props('flat color=white round')

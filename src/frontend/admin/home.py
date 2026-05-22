@@ -21,12 +21,24 @@ from backend.kinesiologos.registar_kinesiologo import (
     modal_registrar_kinesiologo
 )
 
+from backend.kinesiologos.borrar_kinesiologo import (
+    modal_borrar_kinesiologo
+)
+
 from backend.kinesiologos.listar_kinesiologos import (
     obtener_kinesiologos
 )
 
 from backend.kinesiologos.buscar_kinesiologo import (
     modal_buscar_kinesiologos
+)
+
+from backend.admin.cambiar_rol import (
+    modal_cambiar_rol
+)
+
+from backend.admin.listar_usuarios import (
+    tabla_usuarios
 )
 
 # =========================
@@ -63,7 +75,9 @@ def main_page() -> None:
                 'Gestionar Kinesiologos'
             )
 
-            tab_b = ui.tab('B')
+            tab_usuarios = ui.tab(
+                'Gestion de Usuarios'
+            )
 
             tab_c = ui.tab('C')
 
@@ -118,6 +132,19 @@ def main_page() -> None:
                 on_click=modal_registrar_kinesiologo
             ).classes(
                 'mt-4 bg-primary text-white'
+            )
+
+            # =========================
+            # BOTÓN BORRAR
+            # =========================
+
+            ui.button(
+                'Borrar Kinesiólogo',
+                icon='delete',
+                color='negative',
+                on_click=modal_borrar_kinesiologo
+            ).classes(
+                'mt-2 text-white'
             )
 
             # =========================
@@ -238,12 +265,41 @@ def main_page() -> None:
                 )
 
         # =====================================================
-        # TAB B
+        # TAB USUARIOS
         # =====================================================
 
-        with ui.tab_panel(tab_b):
+        with ui.tab_panel(tab_usuarios):
 
-            ui.label('Content of B')
+            ui.label(
+                'Gestión de Usuarios'
+            ).classes(
+                'text-3xl font-bold'
+            )
+
+            ui.separator()
+
+            # =========================
+            # BOTÓN CAMBIAR ROL
+            # =========================
+
+            ui.button(
+                'Cambiar Rol',
+                icon='admin_panel_settings',
+                on_click=modal_cambiar_rol
+            ).classes(
+                'mt-4 bg-primary text-white'
+            )
+
+            # =========================
+            # LISTAR USUARIOS
+            # =========================
+
+            with ui.expansion(
+                'Listar Usuarios',
+                icon='groups'
+            ).classes('w-full mt-4'):
+
+                tabla_usuarios()
 
         # =====================================================
         # TAB C

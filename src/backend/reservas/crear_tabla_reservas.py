@@ -1,6 +1,4 @@
 import sqlite3
-from backend.exceptions.turno_lleno_exception import TurnoLlenoException
-from backend.registro import existe
 
 def crear_tabla_reserva():
     with sqlite3.connect('src/backend/bdd.db') as conexion:
@@ -8,7 +6,7 @@ def crear_tabla_reserva():
 
         # Crear tabla reservas en la BDD
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS reservas (
+            CREATE TABLE IF NOT EXISTS Reservas (
                 idReserva INTEGER PRIMARY KEY AUTOINCREMENT,
                 dniPaciente INTEGER NOT NULL,
                 idTurno INTEGER NOT NULL,
