@@ -1,4 +1,4 @@
-import perfil.perfil 
-import pacientes.home
-import secretarias.home
-import admin.home
+import frontend.perfil.perfil 
+import frontend.pacientes.home
+import frontend.secretarias.home
+#import admin.home

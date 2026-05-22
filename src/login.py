@@ -14,13 +14,15 @@ sys.path.append(str(ROOT_DIR))
 # =========================
 # IMPORTS
 # =========================
-
+import pathlib
+import sys
+import sqlite3
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-
+src_path=pathlib.Path(__file__).resolve().parent.parent
+sys.path.append(str(src_path))
 from nicegui import app, ui
-
 from backend.registro import registrar
 from frontend.pacientes.home import main_page as paciente_home
 from src.utils.fetch_usuarios import chequear_contraseña, get_datos
