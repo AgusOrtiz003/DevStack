@@ -33,5 +33,3 @@ def main_page() -> None:
             pagina_listar_turnos_pendientes()
         with ui.tab_panel('Reservar turno'):
             pagina_reservar_secretaria(tabs, inicio_tab)
-
-ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED')
