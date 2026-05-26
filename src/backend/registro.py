@@ -19,4 +19,4 @@ def cumple_edad(fecha_nacimiento):
     edad = hoy.year - fecha.year
     if (hoy.month, hoy.day) < (fecha.month, fecha.day):
         edad -= 1
-    return edad > 13
+    return edad >= 13
