@@ -8,9 +8,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 src_path=pathlib.Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 from nicegui import app, ui
-from backend.registro import registrar
+from backend.registro import registrar, cumple_edad
 from frontend.pacientes.home import main_page as paciente_home
-from src.utils.fetch_usuarios import chequear_contraseña, get_datos
+from src.utils.fetch_usuarios import chequear_contraseña, get_datos, chequear_correo, existe
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
@@ -49,11 +49,21 @@ class AuthMiddleware(BaseHTTPMiddleware):
 @ui.page('/register')
 def register() -> None:
     def try_register(dni, password, nombre, apellido, email, fechaNac):
-        if registrar(dni, password, nombre, apellido, email, fechaNac):
-            ui.notify('Registro exitoso', color='positive')
-            ui.navigate.to('/login')
+        if all([dni, password, nombre, apellido, email, fechaNac]):
+            if cumple_edad(fechaNac):
+                if not existe(dni):
+                    if not chequear_correo(email):
+                        registrar(dni, password, nombre, apellido, email, fechaNac)
+                        ui.notify('Registro exitoso', color='positive')
+                        ui.navigate.to('/login')
+                    else:
+                        ui.notify('El email ingresado ya tiene una cuenta asociada', color='negative')
+                else:
+                    ui.notify('El DNI ingresado ya existe', color='negative')
+            else:
+                ui.notify("Debes ser mayor de 13 años para crear una cuenta", color='negative')
         else:
-            ui.notify('El DNI ya existe', color='negative')
+            ui.notify("Tenes que llenar todos los campos para registrarte", color='negative')
             
     with ui.card().classes('absolute-center items-stretch'):
         dni = ui.input('DNI').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
