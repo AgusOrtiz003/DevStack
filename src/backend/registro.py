@@ -1,5 +1,5 @@
 import sqlite3
-# PENDIENTE: HASHEAR LAS CONTRASEÑAS
+from src.utils.fetch_usuarios import existe
 def registrar(dni, paswd, nom, ap, mail, fnac):
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
@@ -16,18 +16,3 @@ def registrar(dni, paswd, nom, ap, mail, fnac):
     else:
         conexion.close()
         return False
-
-
-def existe(dni):
-    conexion = sqlite3.connect('./src/backend/bdd.db')
-    cur = conexion.cursor()
-
-    cur.execute("""
-    SELECT * FROM Usuarios WHERE dni = ?
-    """, (dni,))
-
-    resultado = cur.fetchone()
-
-    conexion.close()
-
-    return resultado is not None

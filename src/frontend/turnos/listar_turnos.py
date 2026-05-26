@@ -20,7 +20,7 @@ def pagina_listar_turnos_pendientes():
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupoActual', 'label': 'Cupo Actual', 'field': 'cupoActual'},
         {'name': 'cupoMaximo', 'label': 'Cupo Maximo', 'field': 'cupoMaximo'},
-        {'name': 'accion', 'label': 'Acción', 'field': 'accion'},
+        {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],
     rows=turnos,
     row_key='idReserva').classes('w-full overflow-hidden shadow-md')
@@ -28,11 +28,9 @@ def pagina_listar_turnos_pendientes():
     tabla.add_slot('body-cell-accion', r'''
         <q-td :props="props">
             <q-btn
-                icon="visibility"
+                label="Ver reservas"
                 color="primary"
                 flat
-                round
-                dense
                 @click="$parent.$emit('ver_reservas', props.row.idTurno)"
             />
         </q-td>

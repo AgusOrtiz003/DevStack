@@ -14,20 +14,18 @@ sys.path.append(str(ROOT_DIR))
 # =========================
 # IMPORTS
 # =========================
-
+import pathlib
+import sys
+import sqlite3
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-
+src_path=pathlib.Path(__file__).resolve().parent.parent
+sys.path.append(str(src_path))
 from nicegui import app, ui
-
 from backend.registro import registrar
-from backend.login import chequearContraseña, getNombre, getRol
-
-# IMPORTAR HOME PACIENTE
 from frontend.pacientes.home import main_page as paciente_home
-from frontend.secretarias.home import main_page as secretaria_home
-from frontend.admin.home import main_page as administrador_home
+from src.utils.fetch_usuarios import chequear_contraseña, get_datos
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
@@ -41,42 +39,23 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         path = request.url.path
 
+        authenticated = app.storage.user.get('authenticated')
+        rol = app.storage.user.get('rol')
+
+        # usuario autenticado entrando a raíz
+        if authenticated and path == '/':
+            return RedirectResponse(f'/{rol}/home')
+
+        # rutas permitidas sin login
         if (
-            app.storage.user.get('authenticated')
+            authenticated
             or path in unrestricted_page_routes
             or path.startswith('/_nicegui')
         ):
             return await call_next(request)
 
-        return RedirectResponse(f'/login?redirect_to={path}')
-
-# =========================
-# MAIN PAGE
-# =========================
-
-@ui.page('/')
-def main_page():
-
-    def logout():
-
-        app.storage.user.clear()
-
-        ui.navigate.to('/login')
-
-    with ui.column().classes('absolute-center items-center'):
-
-        ui.label(
-            f'Bienvenido {app.storage.user.get("username", "")}!'
-        ).classes('text-2xl')
-
-        ui.button(
-            on_click=logout,
-            icon='logout'
-        ).props('outline round')
-
-# =========================
-# REGISTER
-# =========================
+        # usuario no autenticado
+        return RedirectResponse('/login')
 
 @ui.page('/register')
 def register():
@@ -155,35 +134,12 @@ def login(redirect_to: str = '/'):
 
         return RedirectResponse('/')
 
-    def try_login(user, passwd):
-
-        # =========================
-        # VALIDAR LOGIN
-        # =========================
-
-        if chequearContraseña(user, passwd):
-
-            username = getNombre(user)
-
-            rol = getRol(user)
-
-            # =========================
-            # GUARDAR SESIÓN
-            # =========================
-
-            app.storage.user.update(
-                username=username,
-                authenticated=True,
-                dni=user,
-                rol=rol
-            )
-
-            print('STORAGE LOGIN:', app.storage.user)
-
-            # =========================
-            # REDIRECCIÓN
-            # =========================
-
+    def try_login(user,passwd) -> None:        
+        if(chequear_contraseña(user, passwd)):
+            datos=get_datos(user)
+            username=datos['nombre']
+            rol=datos['rol']
+            app.storage.user.update(username=username, authenticated=True, dni=user, rol=rol)
             ui.navigate.to(f'/{rol}/home')
 
         else:
