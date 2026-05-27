@@ -78,37 +78,26 @@ def main_page() -> None:
             tabla_container = ui.column().classes('w-full mt-4')
 
             def renderizar_tabla(datos):
-
                 tabla_container.clear()
-
                 columnas = [
                     {'name': 'cuit', 'label': 'CUIT', 'field': 'cuit'},
                     {'name': 'nombre', 'label': 'Nombre', 'field': 'nombre'},
                     {'name': 'apellido', 'label': 'Apellido', 'field': 'apellido'},
-                    {'name': 'horaDesde', 'label': 'Desde', 'field': 'horaDesde'},
-                    {'name': 'horaHasta', 'label': 'Hasta', 'field': 'horaHasta'},
-                    {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
                 ]
-
                 rows = [
                     {
                         'cuit': k[0],
                         'nombre': k[1],
                         'apellido': k[2],
-                        'horaDesde': k[3],
-                        'horaHasta': k[4],
-                        'tratamiento': k[5],
                     }
                     for k in datos
                 ]
-
                 with tabla_container:
                     ui.table(
                         columns=columnas,
                         rows=rows,
                         row_key='cuit'
                     ).classes('w-full')
-
             renderizar_tabla(obtener_kinesiologos())
 
         with ui.tab_panel('Usuarios'):

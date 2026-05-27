@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-import pathlib
-import sys
-import sqlite3
-from fastapi import Request
-from fastapi.responses import RedirectResponse
-from starlette.middleware.base import BaseHTTPMiddleware
-src_path=pathlib.Path(__file__).resolve().parent.parent
-sys.path.append(str(src_path))
-from nicegui import app, ui
+from nicegui import ui
 from frontend.turnos.listar_turnos import pagina_listar_turnos_pendientes
-from frontend.reservas.reservar_secretaria import pagina_reservar_secretaria
+from frontend.reservas.reservas_secretaria import pagina_reservas_secretaria
+from frontend.turnos.crear_turno import pagina_crear_turno
 from src.utils.fetch_usuarios import *
 
 # Página de secretaria
@@ -21,6 +14,7 @@ def main_page() -> None:
             inicio_tab = ui.tab('Inicio',icon='home')
             turnosP_tab = ui.tab('Turnos pendientes',icon='calendar_month')
             reservar_tab = ui.tab('Reservar turno',icon='event')
+            turnos_tab = ui.tab('Crear turno',icon='edit_calendar')
         with ui.row().classes('ml-auto'):
             ui.button(icon='account_circle',on_click=lambda: ui.navigate.to('/ver_perfil')).props('flat color=white round')
             ui.button(on_click=lambda: logout(), icon='logout').props('flat color=white round')
@@ -32,4 +26,6 @@ def main_page() -> None:
         with ui.tab_panel('Turnos pendientes'):
             pagina_listar_turnos_pendientes()
         with ui.tab_panel('Reservar turno'):
-            pagina_reservar_secretaria(tabs, inicio_tab)
+            pagina_reservas_secretaria()
+        with ui.tab_panel('Crear turno'):
+            pagina_crear_turno()

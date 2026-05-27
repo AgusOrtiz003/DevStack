@@ -1,16 +1,20 @@
-from nicegui import ui, app
+from nicegui import ui
+
+from nicegui import ui
+from datetime import date, timedelta
 from backend.reservas.registrar_reserva import registrar_reserva
 from backend.turnos.listar_turnos import listar_los_turnos
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 import sqlite3
 
-# Página de registar reserva
-def pagina_reservas(tabs,reservas_tab,tabla_reservas):
+# Página de registar reserva secretaria
+def pagina_reservas_secretaria():
     metodos_pago = [
         'Efectivo',
         'Transferencia',
         'Billetera virtual'
     ]
+
     def actualizar_listado():
         tabla.rows = listar_los_turnos()
         tabla.update()
@@ -26,7 +30,11 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
             ui.label(
                 f"{turno['fecha']} - {turno['hora']} - {turno['tratamiento']}"
             )
-
+            dni_input = ui.input(
+                label='DNI Paciente',
+                placeholder='44555666',
+                validation={'DNI no válido': lambda value: len(value) == 8}
+            )
             obra_select = ui.select(
                 options=obras,
                 label='Obra social'
@@ -59,15 +67,16 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
                 turno['idTurno'],
                 resultado['obra'],
                 resultado['metodo'],
-                dniPaciente
+                dni_input.value
             )
             ui.notify('Turno reservado con éxito',color='green-500')
         except sqlite3.IntegrityError:
             ui.notify('Turno ya reservado',color='red-500')
         except TurnoLlenoException:
             ui.notify('Turno lleno',color='red-500')
+        except ValueError:
+            ui.notify('El DNI no existe',color='red-500')
 
-    dniPaciente = app.storage.user.get('dni')
     turnos=listar_los_turnos()
 ####################################### PÁGINA ##################################################
     # Parte central
@@ -104,4 +113,3 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
     )
 
     return tabla
-

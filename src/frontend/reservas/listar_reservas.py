@@ -30,7 +30,7 @@ def pagina_listar_reservas():
         {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
-        {'name': 'obraSocial', 'label': 'Obra Social', 'field': 'obraSocial'},
+        {'name': 'obraSocial', 'label': 'Obra Social', 'field': 'obraSocial'},  
         {'name': 'metodoPago', 'label': 'Método de Pago', 'field': 'metodoPago'},
         {'name': 'estado', 'label': 'Estado', 'field': 'estado'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
