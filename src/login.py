@@ -55,8 +55,11 @@ def register() -> None:
                     if verificar_correo(email):
                         if not chequear_correo(email):
                             registrar(dni, password, nombre, apellido, email, fechaNac)
+                            
                             ui.notify('Registro exitoso', color='positive')
-                            ui.navigate.to('/login')
+                            ui.timer(2.5, lambda: ui.navigate.to('/login'),once=True)
+
+                            ui.navigate.to('/login', timeout=3.0)
                         else:
                             ui.notify('El email ingresado ya tiene una cuenta asociada', color='negative')
                     else:
