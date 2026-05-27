@@ -10,7 +10,7 @@ sys.path.append(str(src_path))
 from nicegui import app, ui
 from backend.registro import registrar, cumple_edad
 from frontend.pacientes.home import main_page as paciente_home
-from src.utils.fetch_usuarios import chequear_contraseña, get_datos, chequear_correo, existe
+from src.utils.fetch_usuarios import chequear_contraseña, get_datos, chequear_correo, existe, verificar_correo
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}
 
@@ -52,12 +52,18 @@ def register() -> None:
         if all([dni, password, nombre, apellido, email, fechaNac]):
             if cumple_edad(fechaNac):
                 if not existe(dni):
-                    if not chequear_correo(email):
-                        registrar(dni, password, nombre, apellido, email, fechaNac)
-                        ui.notify('Registro exitoso', color='positive')
-                        ui.navigate.to('/login')
+                    if verificar_correo(email):
+                        if not chequear_correo(email):
+                            registrar(dni, password, nombre, apellido, email, fechaNac)
+                            
+                            ui.notify('Registro exitoso', color='positive')
+                            ui.timer(2.5, lambda: ui.navigate.to('/login'),once=True)
+
+                            ui.navigate.to('/login', timeout=3.0)
+                        else:
+                            ui.notify('El email ingresado ya tiene una cuenta asociada', color='negative')
                     else:
-                        ui.notify('El email ingresado ya tiene una cuenta asociada', color='negative')
+                        ui.notify('Email no válido')
                 else:
                     ui.notify('El DNI ingresado ya existe', color='negative')
             else:
