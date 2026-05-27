@@ -2,19 +2,7 @@
 
 from nicegui import ui
 
-from backend.kinesiologos.listar_kinesiologos import (
-    obtener_kinesiologos
-)
-
-# =========================
-# HORARIOS
-# =========================
-
-HORARIOS = [
-    "08:00","09:00","10:00","11:00","12:00",
-    "13:00","14:00","15:00","16:00","17:00",
-    "18:00","19:00","20:00"
-]
+from backend.kinesiologos.listar_kinesiologos import obtener_kinesiologos
 
 # =========================
 # FILTRAR DATOS
@@ -23,9 +11,7 @@ HORARIOS = [
 def filtrar_kinesiologos(
     nombre='',
     apellido='',
-    cuit='',
-    hora_desde='',
-    hora_hasta=''
+    cuit=''
 ):
 
     datos = obtener_kinesiologos()
@@ -33,41 +19,25 @@ def filtrar_kinesiologos(
     filtrados = []
 
     for k in datos:
+        k_cuit = str(k[1]).lower()
+        k_nombre = str(k[2]).lower()
+        k_apellido = str(k[3]).lower()
 
-        k_cuit = str(k[0]).lower()
-        k_nombre = str(k[1]).lower()
-        k_apellido = str(k[2]).lower()
-        k_hora_desde = str(k[3])
-        k_hora_hasta = str(k[4])
+        coincide = True
 
-        match_nombre = (
-            nombre.lower() in k_nombre
-        ) if nombre else True
+        if nombre:
+            if nombre.lower() not in k_nombre:
+                coincide = False
 
-        match_apellido = (
-            apellido.lower() in k_apellido
-        ) if apellido else True
+        if apellido:
+            if apellido.lower() not in k_apellido:
+                coincide = False
 
-        match_cuit = (
-            cuit.lower() in k_cuit
-        ) if cuit else True
+        if cuit:
+            if cuit.lower() not in k_cuit:
+                coincide = False
 
-        match_desde = (
-            k_hora_desde >= hora_desde
-        ) if hora_desde else True
-
-        match_hasta = (
-            k_hora_hasta <= hora_hasta
-        ) if hora_hasta else True
-
-        if (
-            match_nombre
-            and match_apellido
-            and match_cuit
-            and match_desde
-            and match_hasta
-        ):
-
+        if coincide:
             filtrados.append(k)
 
     return filtrados

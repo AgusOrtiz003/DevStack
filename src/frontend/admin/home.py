@@ -80,15 +80,15 @@ def main_page() -> None:
             def renderizar_tabla(datos):
                 tabla_container.clear()
                 columnas = [
-                    {'name': 'cuit', 'label': 'CUIT', 'field': 'cuit'},
+                    {'name': 'cuit', 'label': 'CUIT', 'field': 'CUIT'},
                     {'name': 'nombre', 'label': 'Nombre', 'field': 'nombre'},
                     {'name': 'apellido', 'label': 'Apellido', 'field': 'apellido'},
                 ]
                 rows = [
                     {
-                        'cuit': k[0],
-                        'nombre': k[1],
-                        'apellido': k[2],
+                        'CUIT': k[1],
+                        'nombre': k[2],
+                        'apellido': k[3],
                     }
                     for k in datos
                 ]
@@ -96,7 +96,7 @@ def main_page() -> None:
                     ui.table(
                         columns=columnas,
                         rows=rows,
-                        row_key='cuit'
+                        row_key='CUIT'
                     ).classes('w-full')
             renderizar_tabla(obtener_kinesiologos())
 

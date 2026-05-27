@@ -21,5 +21,5 @@ def obtener_kinesiologos():
     cursor = conn.cursor()
     cursor.execute('SELECT idKinesiologo, CUIT, nombre, apellido FROM Kinesiologos ORDER BY apellido, nombre')
     datos = cursor.fetchall()
-    conn.close()
     return datos
+    conn.close()
