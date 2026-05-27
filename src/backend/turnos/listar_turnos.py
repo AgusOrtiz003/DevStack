@@ -5,7 +5,14 @@ from datetime import datetime
 def listar_los_turnos():
     with sqlite3.connect('./src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
-        cursor.execute('SELECT idTurno, fecha , hora, tratamiento, cupoActual, cupoMaximo FROM turnos WHERE cupoActual > 0 ORDER BY fecha ASC')
+        cursor.execute('''SELECT t.idTurno, t.fecha , t.hora, t.tratamiento, t.cupoActual, t.cupoMaximo,
+                        GROUP_CONCAT(DISTINCT k.apellido || ' ' || k.nombre) AS kinesiologos,
+                        GROUP_CONCAT(DISTINCT tos.obraSocial) AS obrasSociales 
+                        FROM turnos t INNER JOIN Turno_Kinesiologos tk ON t.idTurno = tk.idTurno
+                        INNER JOIN Kinesiologos k ON tk.idKinesiologo = k.idKinesiologo 
+                        INNER JOIN Turno_ObrasSociales tos ON t.idTurno = tos.idTurno
+                        GROUP BY t.idTurno ORDER BY fecha ASC
+        ''')
         resultados = cursor.fetchall()
         turnos = []
         for resul in resultados:
@@ -15,8 +22,10 @@ def listar_los_turnos():
                     'fecha': fecha_formateada,
                     'hora': resul[2],
                     'tratamiento': resul[3],
-                    'cupoActual': resul[4],
+                    'cupoActual': resul[5]-resul[4],
                     'cupoMaximo': resul[5],
+                    'kinesiologos': resul[6].replace(',', ', '),
+                    'obrasSociales': resul[7].replace(',', ', '),
                 }
             if (turno_pendiente(resul[0])):
                 turnos.append(turno)
@@ -26,7 +35,9 @@ def listar_los_turnos():
 def listar_reservas_turno(idTurno):
     with sqlite3.connect('./src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
-        cursor.execute('SELECT idReserva, dniPaciente, obraSocial, metodoPago, estado, fecha_creacion FROM reservas WHERE idTurno=? ORDER BY dniPaciente ASC',(idTurno,))
+        cursor.execute('''SELECT idReserva, dniPaciente, obraSocial, metodoPago, estado, fecha_creacion 
+                       FROM reservas WHERE idTurno=? ORDER BY fecha_creacion ASC
+        ''',(idTurno,))
         reservas=[]
         resultados = cursor.fetchall()
 

@@ -98,45 +98,12 @@ def modal_buscar_kinesiologos(callback_actualizar_tabla):
             'CUIT'
         ).classes('w-full')
 
-        hora_desde_input = ui.select(
-            HORARIOS,
-            label='Hora Desde'
-        ).classes('w-full')
-
-        hora_hasta_input = ui.select(
-            HORARIOS,
-            label='Hora Hasta'
-        ).classes('w-full')
-
-        # =====================
-        # BUSCAR
-        # =====================
-
         def buscar():
-
-            # -----------------
-            # VALIDAR HORAS
-            # -----------------
-
-            if (
-                hora_desde_input.value
-                and hora_hasta_input.value
-                and hora_desde_input.value > hora_hasta_input.value
-            ):
-
-                ui.notify(
-                    'Hora Desde no puede ser mayor que Hora Hasta',
-                    color='negative'
-                )
-
-                return
 
             datos_filtrados = filtrar_kinesiologos(
                 nombre=nombre_input.value or '',
                 apellido=apellido_input.value or '',
                 cuit=cuit_input.value or '',
-                hora_desde=hora_desde_input.value or '',
-                hora_hasta=hora_hasta_input.value or ''
             )
 
             callback_actualizar_tabla(
