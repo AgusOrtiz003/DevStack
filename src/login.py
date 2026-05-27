@@ -72,7 +72,7 @@ def register() -> None:
             ui.notify("Tenes que llenar todos los campos para registrarte", color='negative')
             
     with ui.card().classes('absolute-center items-stretch'):
-        dni = ui.input('DNI').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
+        dni = ui.input('DNI').props('autofocus').props('''inputmode=numeric maxlength=8 onkeypress="return event.charCode >= 48 && event.charCode <= 57"''').on('keydown.enter', lambda: password.run_method('focus'))
         password = ui.input('Contraseña', password=True, password_toggle_button=True)
         nombre = ui.input('Nombre/s').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
         apellido = ui.input('Apellido').props('autofocus').on('keydown.enter', lambda: password.run_method('focus'))
