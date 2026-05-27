@@ -79,9 +79,9 @@ def ver_perfil ():
             with ui.label(f'Email : {usuario['email']}').classes('text-2xl font-bold text-blue-500 mb-4'):
                 ui.button(icon ="edit", on_click= confirmar_contra.open).classes('ml-2')
             ui.label(f'Fecha de nacimiento : {usuario['fechaNac']}').classes('text-2xl font-bold text-blue-500 mb-4')
-            ui.button('Eliminar cuenta',on_click= abrir_dialogo).classes(
-            'bg-red-600 text-white mt-4 px-6 py-2 rounded-lg ')
-       
+            if (usuario["rol"] == "Paciente"):
+                ui.button('Eliminar cuenta',on_click= abrir_dialogo).classes('bg-red-600 text-white mt-4 px-6 py-2 rounded-lg ')
+        
 
  
             
