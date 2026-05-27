@@ -2,23 +2,30 @@ from nicegui import app,ui
 import utils.imports as imports 
 from pacientes.home import logout 
 from src.utils import fetch_usuarios
-from backend.reservas import usuario_tiene_reservas
+from backend.reservas.usuario_tiene_reservas import usuario_tiene_reservas
 @ui.page('/ver_perfil')
 def ver_perfil ():
+    
+    
+    usuario = fetch_usuarios.get_datos(app.storage.user["dni"])
+    
     def try_eliminar_cuenta(dni):
         if (usuario_tiene_reservas(dni)):
             ui.notify("No se puede eliminar la cuenta porque tiene reservas activas", color = "red")
         else:
             fetch_usuarios.eliminar_cuenta(usuario["dni"])
-    usuario = fetch_usuarios.get_datos(app.storage.user["dni"])
+   
+   
     ui.run_javascript('localStorage.clear()')
+   
+   
     with ui.dialog() as dialog, ui.card():
         ui.label('¿Seguro que querés eliminar tu cuenta?').classes('text-lg')
 
         with ui.row().classes('justify-end w-full gap-2 mt-4'):
             ui.button('Cancelar', on_click=dialog.close)
 
-            ui.button('Eliminar',on_click=lambda: (try_eliminar_cuenta(usuario["dni"]),dialog.close())).classes('bg-red-600 text-white')
+            ui.button('Eliminar',on_click=lambda: (try_eliminar_cuenta(usuario["dni"]),dialog.close() )).classes('bg-red-600 text-white')
     
     
     
