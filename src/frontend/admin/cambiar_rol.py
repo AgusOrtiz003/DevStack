@@ -1,5 +1,5 @@
 from nicegui import app, ui
-
+from backend.reservas import usuario_tiene_reservas
 from src.backend.cambiar_rol import cambiar_rol
 from src.utils.fetch_usuarios import existe, get_datos
 
@@ -15,11 +15,17 @@ def try_cambiar_rol(dni_admin,dni_ingresado,nuevo_rol):
         rol_actual=get_datos(dni_ingresado)['rol']
         distintos=(dni_admin!=dni_ingresado)
         if distintos:
-            if(nuevo_rol!=rol_actual):
-                cambiar_rol(dni_ingresado, nuevo_rol)
-                ui.notify('Rol cambiado exitosamente', color='positive')
+            if not(rol_actual=='Administrador'):
+                if(nuevo_rol!=rol_actual):
+                    if(rol_actual=='Paciente' and usuario_tiene_reservas(dni_ingresado)):
+                        ui.notify('No se puede cambiar el rol de un paciente con reservas activas', color='negative')
+                    else:
+                        cambiar_rol(dni_ingresado, nuevo_rol)
+                        ui.notify('Rol cambiado exitosamente', color='positive')
+                else:
+                    ui.notify('El usuario ingresado ya tiene el rol seleccionado', color='negative')
             else:
-                ui.notify('El usuario ingresado ya tiene el rol seleccionado', color='negative')
+                ui.notify('No podes cambiar el rol de otro administrador', color='negative')
         else:
             ui.notify('No podes cambiar tu propio rol', color='negative')
     else:
