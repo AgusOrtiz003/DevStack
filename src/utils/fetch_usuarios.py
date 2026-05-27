@@ -1,4 +1,5 @@
 import sqlite3
+import re
 from nicegui import ui,app
 
 def existe(dni):
@@ -67,6 +68,7 @@ def cambiar_correo(correo,dni):
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
     cur.execute("UPDATE Usuarios SET email = ? WHERE dni= ?", (correo,dni))
+    conexion.commit()
     conexion.close()
     
     
@@ -77,3 +79,8 @@ def chequear_correo(correo):
     cur.execute("SELECT email FROM Usuarios WHERE email=?", (correo,))
     resultado = cur.fetchone()
     return resultado is not None
+
+def verificar_correo(correo):
+    '''Verifica que el correo respete un patron '''
+    patron = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+    return re.match(patron, correo) is not None
