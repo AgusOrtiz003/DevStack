@@ -33,7 +33,7 @@ def ver_perfil ():
         
     with ui.dialog() as cambio_correo, ui.card():
         ui.label('Ingrese un nuevo correo para cambiarlo').classes('text-lg')
-        correo = ui.input()
+        correo = ui.input().on('keydown.enter', lambda: change_email(correo.value))
 
         with ui.row().classes('justify-end w-full gap-2 mt-4'):
             ui.button('Cancelar', on_click=cambio_correo.close)
@@ -44,7 +44,7 @@ def ver_perfil ():
     with ui.dialog() as confirmar_contra, ui.card():
         ui.label('Ingrese su contraseña para hacer el cambio de correo')
         
-        contra = ui.input().props('autocorrect="off" autocapitalize="off"')
+        contra = ui.input(password=True ,password_toggle_button=True).on('keydown.enter', lambda: cerrar_contra(contra.value))
         
         with ui.row().classes('justify-end w-full gap-2 mt-4'):
             
