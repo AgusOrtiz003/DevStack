@@ -13,7 +13,7 @@ def pagina_listar_reservas():
             ui.label('¿Desea cancelar la reserva?')
             ui.separator()
             with ui.row().classes('w-full justify-center gap-2'):
-                ui.button('Si', on_click=lambda: dialog.submit(True)).props('color=red')
+                ui.button('Si', on_click=lambda: dialog.submit(True)).props('color=red-500')
                 ui.button('No', on_click=lambda: dialog.submit(False)).props('flat')
         if await dialog:
             cancelar_reserva(idReserva)

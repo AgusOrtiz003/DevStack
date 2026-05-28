@@ -2,58 +2,59 @@ import sqlite3
 
 DB_PATH = 'src/backend/bdd.db'
 
-
-def obtener_turno_por_id(id_turno):
-    conexion = sqlite3.connect(DB_PATH)
-    conexion.row_factory = sqlite3.Row
-
-    cursor = conexion.cursor()
-
-    cursor.execute("""
-        SELECT *
-        FROM turnos
-        WHERE id = ?
-    """, (id_turno,))
-
-    turno = cursor.fetchone()
-
-    conexion.close()
-
-    return dict(turno) if turno else None
-
-
 def modificar_turno(
     id_turno,
     fecha,
     hora,
-    kinesiologo,
-    tratamiento,
-    cupo_actual,
-    cupo_maximo
+    kinesiologos,
 ):
-    conexion = sqlite3.connect(DB_PATH)
+    with sqlite3.connect(DB_PATH) as conexion:
+        
+        conexion.execute('PRAGMA foreign_keys = ON')
 
-    cursor = conexion.cursor()
+        if not kinesiologos:
+            raise ValueError('Seleccione al menos un kinesiólogo')
+        
+        cursor = conexion.cursor()
+        for id_kinesiologo in kinesiologos:
+            cursor.execute("""
+                SELECT 1
+                FROM Turnos t
+                INNER JOIN Turno_Kinesiologos tk
+                    ON t.idTurno = tk.idTurno
+                WHERE
+                    t.fecha = ?
+                    AND t.hora = ?
+                    AND tk.idKinesiologo = ?
+                    AND t.idTurno != ?
+            """, (
+                fecha,
+                hora,
+                id_kinesiologo,
+                id_turno
+            ))
 
-    cursor.execute("""
-        UPDATE turnos
-        SET
-            fecha = ?,
-            hora = ?,
-            kinesiologo = ?,
-            tratamiento = ?,
-            cupoActual = ?,
-            cupoMaximo = ?
-        WHERE id = ?
-    """, (
-        fecha,
-        hora,
-        kinesiologo,
-        tratamiento,
-        cupo_actual,
-        cupo_maximo,
-        id_turno
-    ))
+            existe_kinesiologo = cursor.fetchone()
 
-    conexion.commit()
-    conexion.close()
+            if existe_kinesiologo:
+                raise ValueError('Un kinesiólogo ya tiene un turno en ese horario')
+
+        cursor.execute("""
+            DELETE FROM Turno_Kinesiologos
+            WHERE idTurno = ?
+        """, (id_turno,))
+
+        for id_kinesiologo in kinesiologos:
+
+            cursor.execute("""
+                INSERT INTO Turno_Kinesiologos (
+                    idTurno,
+                    idKinesiologo
+                )
+                VALUES (?, ?)
+            """, (
+                id_turno,
+                id_kinesiologo
+            ))
+
+        conexion.commit()

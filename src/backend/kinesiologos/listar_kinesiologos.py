@@ -17,9 +17,9 @@ DB_PATH = BASE_DIR / 'backend' / 'bdd.db'
 
 def obtener_kinesiologos():
 
-    conn = sqlite3.connect(str(DB_PATH))
-    cursor = conn.cursor()
-    cursor.execute('SELECT idKinesiologo, CUIT, nombre, apellido FROM Kinesiologos ORDER BY apellido, nombre')
-    datos = cursor.fetchall()
-    return datos
-    conn.close()
+    with sqlite3.connect(str(DB_PATH)) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT idKinesiologo, CUIT, nombre, apellido FROM Kinesiologos ORDER BY apellido, nombre')
+        datos = cursor.fetchall()
+        return datos
+    
