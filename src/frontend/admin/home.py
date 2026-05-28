@@ -21,6 +21,8 @@ from backend.kinesiologos.buscar_kinesiologo import modal_buscar_kinesiologos
 from backend.admin.cambiar_rol import modal_cambiar_rol
 from backend.admin.listar_usuarios import tabla_usuarios
 
+from frontend.turnos.cancelar_turno import pagina_cancelar_turno
+
 
 @ui.page('/Administrador/home')
 def main_page() -> None:
@@ -32,6 +34,7 @@ def main_page() -> None:
                 ui.tab('Kinesiologos', icon='groups')
                 ui.tab('Usuarios', icon='admin_panel_settings')
                 ui.tab('Cambiar Rol', icon='event')
+                ui.tab('Cancelar Turnos', icon='event_busy')
 
         with ui.row():
             ui.button(
@@ -80,15 +83,15 @@ def main_page() -> None:
             def renderizar_tabla(datos):
                 tabla_container.clear()
                 columnas = [
-                    {'name': 'cuit', 'label': 'CUIT', 'field': 'cuit'},
+                    {'name': 'cuit', 'label': 'CUIT', 'field': 'CUIT'},
                     {'name': 'nombre', 'label': 'Nombre', 'field': 'nombre'},
                     {'name': 'apellido', 'label': 'Apellido', 'field': 'apellido'},
                 ]
                 rows = [
                     {
-                        'cuit': k[0],
-                        'nombre': k[1],
-                        'apellido': k[2],
+                        'CUIT': k[1],
+                        'nombre': k[2],
+                        'apellido': k[3],
                     }
                     for k in datos
                 ]
@@ -96,7 +99,7 @@ def main_page() -> None:
                     ui.table(
                         columns=columnas,
                         rows=rows,
-                        row_key='cuit'
+                        row_key='CUIT'
                     ).classes('w-full')
             renderizar_tabla(obtener_kinesiologos())
 
@@ -128,3 +131,6 @@ def main_page() -> None:
         ):
 
             cambiar_rol_page()
+                
+        with ui.tab_panel('Cancelar Turnos'):
+            pagina_cancelar_turno()

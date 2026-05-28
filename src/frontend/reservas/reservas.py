@@ -11,12 +11,16 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
         'Transferencia',
         'Billetera virtual'
     ]
+    obras_sociales = [
+        'IOMA',
+        'OSDE',
+        'Particular'
+    ]
     def actualizar_listado():
         tabla.rows = listar_los_turnos()
         tabla.update()
 
     async def reservar_turno(turno):
-        obras = turno['obrasSociales'].split(', ')
         with ui.dialog() as dialog, ui.card().classes('w-100'):
             
             ui.label('Reservar turno').classes('text-xl font-bold')
@@ -28,7 +32,7 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
             )
 
             obra_select = ui.select(
-                options=obras,
+                options=obras_sociales,
                 label='Obra social'
             ).classes('w-full').props('outlined')
 
@@ -78,7 +82,6 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupos', 'label': 'Cupos Disponibles', 'field': 'cupoActual'},
-        {'name': 'obrasSociales', 'label': 'Obras sociales', 'field': 'obrasSociales'},
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],

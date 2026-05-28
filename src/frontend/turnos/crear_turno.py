@@ -1,18 +1,27 @@
 from nicegui import ui
 import sqlite3
 from backend.kinesiologos.listar_kinesiologos import obtener_kinesiologos
+from backend.turnos.listar_turnos import listar_los_turnos
 from backend.turnos.crear_turno import crear_turno
 
-def pagina_crear_turno():
-    def crear_turno_pagina(fecha,hora,tratamiento,kinesiologos,obras_soc,cupo_max):
-        if not fecha.value or not hora.value or not tratamiento.value or not kinesiologos.value or not obras_soc.value:
+def pagina_crear_turno(tabla_principal):
+
+    def actualizar_listado():
+        tabla_principal.rows = listar_los_turnos()
+        tabla_principal.update()
+
+    def crear_turno_pagina(fecha,hora,tratamiento,kinesiologos,cupo_max):
+        if not fecha.value or not hora.value or not tratamiento.value or not kinesiologos.value:
             ui.notify('Seleccione todos los campos',color='red-500')
             return
         try:
-            crear_turno(fecha.value,hora.value,tratamiento.value,cupo_max.value,kinesiologos.value,obras_soc.value)
+            crear_turno(fecha.value,hora.value,tratamiento.value,cupo_max.value,kinesiologos.value)
             ui.notify('Turno registrado con éxito',color='green-500')
+            actualizar_listado()
         except sqlite3.IntegrityError:
             ui.notify('Turno ya registrado',color='red-500')
+        except ValueError:
+            ui.notify('Kinesiólogo/s ya asignado/s en este horario',color='red-500')
 
 
     horarios = [
@@ -30,12 +39,6 @@ def pagina_crear_turno():
         'Tren superior',
         'Tren medio',
         'Tren inferior',
-    ]
-
-    obras_sociales = [
-        'IOMA',
-        'OSDE',
-        'Particular'
     ]
 
     kinesiologos = {
@@ -74,21 +77,14 @@ def pagina_crear_turno():
                         with_input=True
                     ).classes('w-full').props('outlined dense use-chips clearable stack-label')
 
-                    obras_select = ui.select(
-                        options=obras_sociales,
-                        label='Obras sociales',
-                        multiple=True,
-                        with_input=True
-                    ).classes('w-full').props('outlined dense use-chips clearable stack-label')
-
                     cupo_select = ui.number(
                         label='Cupo máximo',
                         value=10,
                         min=1,
-                        max=50
+                        max=20
                     ).classes('w-full').props('outlined dense')
 
                     ui.button(
                         'Crear turno',
-                        on_click=lambda: crear_turno_pagina(fecha_select,hora_select,tratamiento_select,kinesiologos_select,obras_select,cupo_select)
-                    ).classes('w-full')
+                        on_click=lambda: crear_turno_pagina(fecha_select,hora_select,tratamiento_select,kinesiologos_select,cupo_select)
+                    ).classes('w-full mt-auto')

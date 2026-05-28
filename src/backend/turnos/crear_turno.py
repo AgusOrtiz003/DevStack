@@ -7,8 +7,7 @@ def crear_turno(
     hora,
     tratamiento,
     cupo_maximo,
-    kinesiologos,
-    obras,
+    kinesiologos
 ):
 
     with sqlite3.connect(DB_PATH) as conexion:
@@ -32,6 +31,26 @@ def crear_turno(
         id_turno = cursor.lastrowid
         for id_kinesiologo in kinesiologos:
             cursor.execute("""
+                SELECT 1
+                FROM Turnos t
+                INNER JOIN Turno_Kinesiologos tk
+                    ON t.idTurno = tk.idTurno
+                WHERE
+                    t.fecha = ?
+                    AND t.hora = ?
+                    AND tk.idKinesiologo = ?
+            """, (
+                fecha,
+                hora,
+                id_kinesiologo
+            ))
+
+            existe_kinesiologo = cursor.fetchone()
+
+            if existe_kinesiologo:
+                raise ValueError('Un kinesiólogo ya tiene un turno en ese horario')
+
+            cursor.execute("""
                 INSERT INTO Turno_Kinesiologos (
                     idTurno,
                     idKinesiologo
@@ -40,17 +59,6 @@ def crear_turno(
             """, (
                 id_turno,
                 id_kinesiologo
-            ))
-        for obra in obras:
-            cursor.execute("""
-                INSERT INTO Turno_ObrasSociales (
-                    idTurno,
-                    obraSocial
-                )
-                VALUES (?, ?)
-            """, (
-                id_turno,
-                obra
             ))
         conexion.commit()
     conexion.close()

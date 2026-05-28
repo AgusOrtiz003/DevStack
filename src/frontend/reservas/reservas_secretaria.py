@@ -8,19 +8,27 @@ from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 import sqlite3
 
 # Página de registar reserva secretaria
-def pagina_reservas_secretaria():
+def pagina_reservas_secretaria(tabla_principal):
     metodos_pago = [
         'Efectivo',
         'Transferencia',
         'Billetera virtual'
     ]
 
+    obras_sociales = [
+        'IOMA',
+        'OSDE',
+        'Particular'
+    ]
+
     def actualizar_listado():
-        tabla.rows = listar_los_turnos()
-        tabla.update()
+        turnos = listar_los_turnos()
+        tabla_principal.rows = turnos
+        tabla_principal.update()
+        tabla_reservas.rows = listar_los_turnos()
+        tabla_reservas.update()
 
     async def reservar_turno(turno):
-        obras = turno['obrasSociales'].split(', ')
         with ui.dialog() as dialog, ui.card().classes('w-100'):
             
             ui.label('Reservar turno').classes('text-xl font-bold')
@@ -36,7 +44,7 @@ def pagina_reservas_secretaria():
                 validation={'DNI no válido': lambda value: len(value) == 8}
             )
             obra_select = ui.select(
-                options=obras,
+                options=obras_sociales,
                 label='Obra social'
             ).classes('w-full').props('outlined')
 
@@ -70,6 +78,7 @@ def pagina_reservas_secretaria():
                 dni_input.value
             )
             ui.notify('Turno reservado con éxito',color='green-500')
+            actualizar_listado()
         except sqlite3.IntegrityError:
             ui.notify('Turno ya reservado',color='red-500')
         except TurnoLlenoException:
@@ -81,22 +90,21 @@ def pagina_reservas_secretaria():
 ####################################### PÁGINA ##################################################
     # Parte central
     ui.label('Turnos disponibles').classes('text-2xl font-bold m-4')
-    tabla = ui.table(
+    tabla_reservas = ui.table(
     columns=[
         {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupos', 'label': 'Cupos Disponibles', 'field': 'cupoActual'},
-        {'name': 'obrasSociales', 'label': 'Obras sociales', 'field': 'obrasSociales'},
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],
     rows=turnos,
     row_key='idTurno').classes('w-full overflow-hidden shadow-md')
-    with tabla.add_slot('top-left'):
+    with tabla_reservas.add_slot('top-left'):
         ui.button(icon='sync',on_click=lambda: actualizar_listado()).props('flat')
 
-    tabla.add_slot('body-cell-accion', r'''
+    tabla_reservas.add_slot('body-cell-accion', r'''
         <q-td :props="props">
             <q-btn
                 label="Reservar"
@@ -107,9 +115,9 @@ def pagina_reservas_secretaria():
         </q-td>
     ''')
 
-    tabla.on(
+    tabla_reservas.on(
         'reservar',
         lambda e: reservar_turno(e.args)
     )
 
-    return tabla
+    return tabla_reservas

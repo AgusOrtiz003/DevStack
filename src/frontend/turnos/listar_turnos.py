@@ -9,8 +9,8 @@ def pagina_listar_turnos_pendientes():
         tabla.rows = listar_los_turnos()
         tabla.update()
         
+    turnos = listar_los_turnos()
     
-    turnos=listar_los_turnos()
     # Parte central
     tabla = ui.table(
     columns=[
@@ -19,7 +19,6 @@ def pagina_listar_turnos_pendientes():
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupoActual', 'label': 'Cupos disponibles', 'field': 'cupoActual'},
         {'name': 'cupoMaximo', 'label': 'Cupo máximo', 'field': 'cupoMaximo'},
-        {'name': 'obrasSociales', 'label': 'Obras sociales', 'field': 'obrasSociales'},
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],

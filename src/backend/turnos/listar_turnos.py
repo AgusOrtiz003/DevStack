@@ -7,10 +7,9 @@ def listar_los_turnos():
         cursor = conexion.cursor()
         cursor.execute('''SELECT t.idTurno, t.fecha , t.hora, t.tratamiento, t.cupoActual, t.cupoMaximo,
                         GROUP_CONCAT(DISTINCT k.apellido || ' ' || k.nombre) AS kinesiologos,
-                        GROUP_CONCAT(DISTINCT tos.obraSocial) AS obrasSociales 
+                        GROUP_CONCAT(tk.idKinesiologo) AS idsKinesiologos 
                         FROM turnos t INNER JOIN Turno_Kinesiologos tk ON t.idTurno = tk.idTurno
                         INNER JOIN Kinesiologos k ON tk.idKinesiologo = k.idKinesiologo 
-                        INNER JOIN Turno_ObrasSociales tos ON t.idTurno = tos.idTurno
                         GROUP BY t.idTurno ORDER BY fecha ASC
         ''')
         resultados = cursor.fetchall()
@@ -25,7 +24,7 @@ def listar_los_turnos():
                     'cupoActual': resul[5]-resul[4],
                     'cupoMaximo': resul[5],
                     'kinesiologos': resul[6].replace(',', ', '),
-                    'obrasSociales': resul[7].replace(',', ', '),
+                    'idsKinesiologos': [int(x) for x in resul[7].split(',')]
                 }
             if (turno_pendiente(resul[0])):
                 turnos.append(turno)

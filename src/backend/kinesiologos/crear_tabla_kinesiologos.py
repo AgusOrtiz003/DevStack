@@ -29,10 +29,9 @@ def crear_tabla_turnos_kinesiologos():
                         PRIMARY KEY(idTurno, idKinesiologo),
                         
                         FOREIGN KEY(idTurno)
-                            REFERENCES turnos(idTurno),
+                            REFERENCES Turnos(idTurno),
                         FOREIGN KEY(idKinesiologo)
-                            REFERENCES kinesiologos(idKinesiologo)
+                            REFERENCES Kinesiologos(idKinesiologo)
                         )
                     ''')
         conexion.commit()
-    conexion.close()
