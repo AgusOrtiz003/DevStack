@@ -43,7 +43,7 @@ def borrar_kinesiologo(cuit):
         # =====================
 
         cursor.execute("""
-            SELECT id
+            SELECT idKinesiologo
             FROM Kinesiologos
             WHERE cuit = ?
         """, (cuit,))
