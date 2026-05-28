@@ -7,7 +7,7 @@ from src.utils.fetch_usuarios import existe, get_datos
 def cambiar_rol_page():
     with ui.card().classes('w-50'):
         dni_input = ui.input('DNI del usuario').props('autofocus')
-        nuevo_rol_input = ui.select(['Paciente', 'Kinesiologo', 'Administrador'], label='Nuevo rol')
+        nuevo_rol_input = ui.select(['Paciente', 'Secretaria', 'Administrador'], label='Nuevo rol')
         ui.button('Cambiar rol', on_click=lambda: try_cambiar_rol(app.storage.user['dni'], dni_input.value, nuevo_rol_input.value))
     
 def try_cambiar_rol(dni_admin,dni_ingresado,nuevo_rol):
