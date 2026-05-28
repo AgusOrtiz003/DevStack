@@ -70,8 +70,10 @@ def ver_perfil ():
         if(fetch_usuarios.verificar_correo(correo)):
             if (not fetch_usuarios.chequear_correo(correo)):
                 fetch_usuarios.cambiar_correo(correo,usuario["dni"])
-            cambio_correo.close()
-            ui.navigate.reload()
+                cambio_correo.close()
+                ui.navigate.reload()
+            else:
+                ui.notify("El correo ya se encuentra registrado en el sistema", color= "red")
         else:
             ui.notify("Correo no valido", color= "red")
         
