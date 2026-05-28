@@ -59,8 +59,19 @@ def eliminar_cuenta(dni):
         logout()
 
 def logout() -> None:
-        app.storage.user.clear()
-        ui.navigate.to('/login')
+
+    app.storage.user.clear()
+
+    ui.notify(
+        'Cierre de sesión exitoso',
+        color='positive'
+    )
+
+    ui.timer(
+        2.0,
+        lambda: ui.navigate.to('/login'),
+        once=True
+    )
         
 def cambiar_correo(correo,dni):
     ''' Recibe por parametro un correo y DNI, procede a cambiar el correo a dicho DNI'''
