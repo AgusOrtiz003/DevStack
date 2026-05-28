@@ -17,10 +17,13 @@ from backend.kinesiologos.borrar_kinesiologo import modal_borrar_kinesiologo
 from backend.kinesiologos.listar_kinesiologos import obtener_kinesiologos
 from backend.kinesiologos.buscar_kinesiologo import modal_buscar_kinesiologos
 
-from backend.admin.cambiar_rol import modal_cambiar_rol
-from backend.admin.listar_usuarios import tabla_usuarios
 
+from frontend.admin.cambiar_rol import cambiar_rol_page
 from frontend.turnos.cancelar_turno import pagina_cancelar_turno
+from frontend.turnos.listar_turnos import pagina_listar_turnos_pendientes
+from frontend.reservas.reservas_secretaria import pagina_reservas_secretaria
+from frontend.turnos.crear_turno import pagina_crear_turno
+from frontend.turnos.modificar_turno import pagina_modificar_turno
 
 
 @ui.page('/Administrador/home')
@@ -31,8 +34,11 @@ def main_page() -> None:
             with ui.tabs() as tabs:
                 ui.tab('Inicio', icon='home')
                 ui.tab('Kinesiologos', icon='groups')
-                ui.tab('Usuarios', icon='admin_panel_settings')
                 ui.tab('Cambiar Rol', icon='event')
+                ui.tab('Turnos pendientes',icon='calendar_month')
+                ui.tab('Reservar turno',icon='event')
+                ui.tab('Crear turno',icon='add')
+                ui.tab('Modificar turnos',icon='edit_calendar')
                 ui.tab('Cancelar Turnos', icon='event_busy')
 
         with ui.row():
@@ -102,34 +108,21 @@ def main_page() -> None:
                     ).classes('w-full')
             renderizar_tabla(obtener_kinesiologos())
 
-        with ui.tab_panel('Usuarios'):
-
-            ui.label(
-                'Gestión de Usuarios'
-            ).classes('text-3xl font-bold')
-
-            ui.separator()
-
-            ui.button(
-                'Cambiar Rol',
-                icon='admin_panel_settings',
-                on_click=modal_cambiar_rol
-            ).classes('mt-4')
-
-            with ui.expansion(
-                'Listar Usuarios',
-                icon='groups'
-            ).classes('w-full mt-4'):
-
-                tabla_usuarios()
-
         with ui.tab_panel('Cambiar Rol').classes(
             'w-full items-center justify-center'
         ).style(
             'height: calc(100vh - 70px);'
         ):
-
+            
             cambiar_rol_page()
-                
+        
+        with ui.tab_panel('Turnos pendientes'):
+            tabla_turnos = pagina_listar_turnos_pendientes()
+        with ui.tab_panel('Reservar turno'):
+            pagina_reservas_secretaria(tabla_turnos)
+        with ui.tab_panel('Crear turno'):
+            pagina_crear_turno(tabla_turnos)
+        with ui.tab_panel('Modificar turnos'):
+            pagina_modificar_turno(tabla_turnos)
         with ui.tab_panel('Cancelar Turnos'):
             pagina_cancelar_turno()
