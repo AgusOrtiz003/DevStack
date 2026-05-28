@@ -129,6 +129,7 @@ def modal_registrar_kinesiologo():
 
             if ok:
                 dialog.close()
+               
 
         # =========================
         # BOTONES
