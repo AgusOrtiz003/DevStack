@@ -1,5 +1,5 @@
 from nicegui import app, ui
-from backend.reservas import usuario_tiene_reservas
+from backend.reservas.usuario_tiene_reservas import usuario_tiene_reservas
 from src.backend.cambiar_rol import cambiar_rol
 from src.utils.fetch_usuarios import existe, get_datos
 
