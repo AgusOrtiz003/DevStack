@@ -1,24 +1,32 @@
-from nicegui import ui, app
+from nicegui import ui
+
+from nicegui import ui
+from datetime import date, timedelta
 from backend.reservas.registrar_reserva import registrar_reserva
 from backend.turnos.listar_turnos import listar_los_turnos
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 import sqlite3
 
-# Página de registar reserva
-def pagina_reservas(tabs,reservas_tab,tabla_reservas):
+# Página de registar reserva secretaria
+def pagina_reservas_secretaria(tabla_principal):
     metodos_pago = [
         'Efectivo',
         'Transferencia',
         'Billetera virtual'
     ]
+
     obras_sociales = [
         'IOMA',
         'OSDE',
         'Particular'
     ]
+
     def actualizar_listado():
-        tabla.rows = listar_los_turnos()
-        tabla.update()
+        turnos = listar_los_turnos()
+        tabla_principal.rows = turnos
+        tabla_principal.update()
+        tabla_reservas.rows = listar_los_turnos()
+        tabla_reservas.update()
 
     async def reservar_turno(turno):
         with ui.dialog() as dialog, ui.card().classes('w-100'):
@@ -30,7 +38,11 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
             ui.label(
                 f"{turno['fecha']} - {turno['hora']} - {turno['tratamiento']}"
             )
-
+            dni_input = ui.input(
+                label='DNI Paciente',
+                placeholder='44555666',
+                validation={'DNI no válido': lambda value: len(value) == 8}
+            )
             obra_select = ui.select(
                 options=obras_sociales,
                 label='Obra social'
@@ -63,20 +75,22 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
                 turno['idTurno'],
                 resultado['obra'],
                 resultado['metodo'],
-                dniPaciente
+                dni_input.value
             )
             ui.notify('Turno reservado con éxito',color='green-500')
+            actualizar_listado()
         except sqlite3.IntegrityError:
             ui.notify('Turno ya reservado',color='red-500')
         except TurnoLlenoException:
             ui.notify('Turno lleno',color='red-500')
+        except ValueError:
+            ui.notify('El DNI no existe',color='red-500')
 
-    dniPaciente = app.storage.user.get('dni')
     turnos=listar_los_turnos()
 ####################################### PÁGINA ##################################################
     # Parte central
     ui.label('Turnos disponibles').classes('text-2xl font-bold m-4')
-    tabla = ui.table(
+    tabla_reservas = ui.table(
     columns=[
         {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
@@ -87,10 +101,10 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
     ],
     rows=turnos,
     row_key='idTurno').classes('w-full overflow-hidden shadow-md')
-    with tabla.add_slot('top-left'):
+    with tabla_reservas.add_slot('top-left'):
         ui.button(icon='sync',on_click=lambda: actualizar_listado()).props('flat')
 
-    tabla.add_slot('body-cell-accion', r'''
+    tabla_reservas.add_slot('body-cell-accion', r'''
         <q-td :props="props">
             <q-btn
                 label="Reservar"
@@ -101,10 +115,9 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
         </q-td>
     ''')
 
-    tabla.on(
+    tabla_reservas.on(
         'reservar',
         lambda e: reservar_turno(e.args)
     )
 
-    return tabla
-
+    return tabla_reservas

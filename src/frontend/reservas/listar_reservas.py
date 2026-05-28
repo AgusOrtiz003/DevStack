@@ -13,7 +13,7 @@ def pagina_listar_reservas():
             ui.label('¿Desea cancelar la reserva?')
             ui.separator()
             with ui.row().classes('w-full justify-center gap-2'):
-                ui.button('Si', on_click=lambda: dialog.submit(True)).props('color=red')
+                ui.button('Si', on_click=lambda: dialog.submit(True)).props('color=red-500')
                 ui.button('No', on_click=lambda: dialog.submit(False)).props('flat')
         if await dialog:
             cancelar_reserva(idReserva)
@@ -30,44 +30,23 @@ def pagina_listar_reservas():
         {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
-        {'name': 'obraSocial', 'label': 'Obra Social', 'field': 'obraSocial'},
+        {'name': 'obraSocial', 'label': 'Obra Social', 'field': 'obraSocial'},  
         {'name': 'metodoPago', 'label': 'Método de Pago', 'field': 'metodoPago'},
         {'name': 'estado', 'label': 'Estado', 'field': 'estado'},
-        {'name': 'accion', 'label': 'Acción', 'field': 'accion'},
+        {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],
     rows=reservas,
     row_key='idReserva').classes('w-full overflow-hidden shadow-md')
 
-    tabla.add_slot('body', r'''
-        <q-tr
-            :props="props"
-            class="group hover:bg-blue-1 transition-all duration-200"
-        >
-            <q-td
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-            >
-
-                <template v-if="col.name != 'accion'">
-                    {{ col.value }}
-                </template>
-
-                <template v-else>
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <q-btn
-                            icon="delete"
-                            color="negative"
-                            flat
-                            round
-                            dense
-                            @click="$parent.$emit('eliminar', props.row.idReserva)"
-                        />
-                    </div>
-                </template>
-
-            </q-td>
-        </q-tr>
+    tabla.add_slot('body-cell-accion', r'''
+        <q-td :props="props">
+            <q-btn
+                label="Cancelar reserva"
+                color="negative"
+                flat
+                @click="$parent.$emit('eliminar', props.row.idReserva)"
+            />
+        </q-td>
     ''')
 
     tabla.on('eliminar', lambda e: cancelar_y_actualizar(e.args))

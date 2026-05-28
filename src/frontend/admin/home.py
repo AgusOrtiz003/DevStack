@@ -20,6 +20,8 @@ from backend.kinesiologos.buscar_kinesiologo import modal_buscar_kinesiologos
 from backend.admin.cambiar_rol import modal_cambiar_rol
 from backend.admin.listar_usuarios import tabla_usuarios
 
+from frontend.turnos.cancelar_turno import pagina_cancelar_turno
+
 
 @ui.page('/Administrador/home')
 def main_page() -> None:
@@ -30,6 +32,8 @@ def main_page() -> None:
                 ui.tab('Inicio', icon='home')
                 ui.tab('Kinesiologos', icon='groups')
                 ui.tab('Usuarios', icon='admin_panel_settings')
+                ui.tab('Cambiar Rol', icon='event')
+                ui.tab('Cancelar Turnos', icon='event_busy')
 
         with ui.row():
             ui.button(
@@ -76,37 +80,26 @@ def main_page() -> None:
             tabla_container = ui.column().classes('w-full mt-4')
 
             def renderizar_tabla(datos):
-
                 tabla_container.clear()
-
                 columnas = [
-                    {'name': 'cuit', 'label': 'CUIT', 'field': 'cuit'},
+                    {'name': 'cuit', 'label': 'CUIT', 'field': 'CUIT'},
                     {'name': 'nombre', 'label': 'Nombre', 'field': 'nombre'},
                     {'name': 'apellido', 'label': 'Apellido', 'field': 'apellido'},
-                    {'name': 'horaDesde', 'label': 'Desde', 'field': 'horaDesde'},
-                    {'name': 'horaHasta', 'label': 'Hasta', 'field': 'horaHasta'},
-                    {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
                 ]
-
                 rows = [
                     {
-                        'cuit': k[0],
-                        'nombre': k[1],
-                        'apellido': k[2],
-                        'horaDesde': k[3],
-                        'horaHasta': k[4],
-                        'tratamiento': k[5],
+                        'CUIT': k[1],
+                        'nombre': k[2],
+                        'apellido': k[3],
                     }
                     for k in datos
                 ]
-
                 with tabla_container:
                     ui.table(
                         columns=columnas,
                         rows=rows,
-                        row_key='cuit'
+                        row_key='CUIT'
                     ).classes('w-full')
-
             renderizar_tabla(obtener_kinesiologos())
 
         with ui.tab_panel('Usuarios'):
@@ -129,3 +122,14 @@ def main_page() -> None:
             ).classes('w-full mt-4'):
 
                 tabla_usuarios()
+
+        with ui.tab_panel('Cambiar Rol').classes(
+            'w-full items-center justify-center'
+        ).style(
+            'height: calc(100vh - 70px);'
+        ):
+
+            cambiar_rol_page()
+                
+        with ui.tab_panel('Cancelar Turnos'):
+            pagina_cancelar_turno()

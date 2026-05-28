@@ -2,20 +2,33 @@ import sqlite3
 
 DB_PATH = 'src/backend/bdd.db'
 
-def modificar_turno(
-    id_turno,
+def crear_turno(
     fecha,
     hora,
-    kinesiologos,
+    tratamiento,
+    cupo_maximo,
+    kinesiologos
 ):
-    with sqlite3.connect(DB_PATH) as conexion:
-        
-        conexion.execute('PRAGMA foreign_keys = ON')
 
-        if not kinesiologos:
-            raise ValueError('Seleccione al menos un kinesiólogo')
-        
+    with sqlite3.connect(DB_PATH) as conexion:
         cursor = conexion.cursor()
+        cursor.execute("""
+            INSERT INTO Turnos (
+                fecha,
+                hora,
+                tratamiento,
+                cupoActual,
+                cupoMaximo
+            )
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            fecha,
+            hora,
+            tratamiento,
+            0,
+            cupo_maximo,
+        ))
+        id_turno = cursor.lastrowid
         for id_kinesiologo in kinesiologos:
             cursor.execute("""
                 SELECT 1
@@ -26,25 +39,16 @@ def modificar_turno(
                     t.fecha = ?
                     AND t.hora = ?
                     AND tk.idKinesiologo = ?
-                    AND t.idTurno != ?
             """, (
                 fecha,
                 hora,
-                id_kinesiologo,
-                id_turno
+                id_kinesiologo
             ))
 
             existe_kinesiologo = cursor.fetchone()
 
             if existe_kinesiologo:
                 raise ValueError('Un kinesiólogo ya tiene un turno en ese horario')
-
-        cursor.execute("""
-            DELETE FROM Turno_Kinesiologos
-            WHERE idTurno = ?
-        """, (id_turno,))
-
-        for id_kinesiologo in kinesiologos:
 
             cursor.execute("""
                 INSERT INTO Turno_Kinesiologos (
@@ -56,5 +60,5 @@ def modificar_turno(
                 id_turno,
                 id_kinesiologo
             ))
-
         conexion.commit()
+    conexion.close()

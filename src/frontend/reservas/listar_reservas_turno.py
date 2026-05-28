@@ -47,10 +47,9 @@ def pagina_listar_reservas_secretaria(idTurno: int):
 
             <q-btn
                 v-if="props.row.estado != 'Confirmado'"
-                icon="check"
+                label='Realizar check-in'
                 color="positive"
                 flat
-                round
                 dense
                 @click="$parent.$emit('check_in', props.row.idReserva)"
             />

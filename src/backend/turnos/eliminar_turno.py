@@ -1,38 +1,26 @@
 import sqlite3
-from nicegui import ui
-from backend.turnos.listar_turnos import listar_los_turnos
 
 
-def eliminar_turno_seleccionado(tabla):
-
-    # Verifica si hay una fila seleccionada
-    if not tabla.selected:
-        ui.notify('Seleccioná un turno', color='orange')
-        return
-
-    # Obtiene el ID del turno seleccionado
-    id_turno = tabla.selected[0]['id']
-
-    try:
+def eliminar_turno(id_turno):
         # Conexión a la base de datos
-        conexion = sqlite3.connect('./src/backend/bdd.db')
-        cursor = conexion.cursor()
+        with sqlite3.connect('./src/backend/bdd.db') as conexion:
+            cursor = conexion.cursor()
+            # Borrar reservas
+            cursor.execute(
+                'DELETE FROM Reservas WHERE idTurno=?',
+                (id_turno,)      
+            )
 
-        # Elimina el turno
-        cursor.execute(
-            'DELETE FROM turnos WHERE id = ?',
-            (id_turno,)
-        )
+            # Borrar kinesiologos
+            cursor.execute(
+                'DELETE FROM Turno_Kinesiologos WHERE idTurno=?',
+                (id_turno,)
+            )
 
-        conexion.commit()
+            # Borrar turnos
+            cursor.execute(
+                'DELETE FROM Turnos WHERE idTurno = ?',
+                (id_turno,)
+            )
+            conexion.commit()
         conexion.close()
-
-        # Mensaje
-        ui.notify('Turno eliminado correctamente', color='green')
-
-        # Refresca la tabla
-        tabla.rows = listar_los_turnos()
-        tabla.update()
-
-    except Exception as e:
-        ui.notify(f'Error al eliminar turno: {e}', color='red')
