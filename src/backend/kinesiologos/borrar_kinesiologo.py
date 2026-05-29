@@ -59,7 +59,7 @@ def borrar_kinesiologo(cuit):
 
             return False
 
-        cursor.execute('SELECT 1 FROM Turno_Kinesiologos WHERE CUIT=?',(cuit))
+        cursor.execute('SELECT 1 FROM Turno_Kinesiologos WHERE idKinesiologo=?',(kines[0],))
         existe_kinesiologo = cursor.fetchone()
         if existe_kinesiologo:
             ui.notify('Kinesiólogo asignado a un turno',color='red-500')
