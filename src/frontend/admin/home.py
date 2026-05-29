@@ -101,11 +101,14 @@ def main_page() -> None:
                     for k in datos
                 ]
                 with tabla_container:
-                    ui.table(
+                    tabla_kinesiologos = ui.table(
                         columns=columnas,
                         rows=rows,
                         row_key='CUIT'
                     ).classes('w-full')
+                    with tabla_kinesiologos.add_slot('top-left'):
+                        ui.button(icon='sync',on_click=lambda: renderizar_tabla(obtener_kinesiologos())).props('flat')
+
             renderizar_tabla(obtener_kinesiologos())
 
         with ui.tab_panel('Cambiar Rol').classes(

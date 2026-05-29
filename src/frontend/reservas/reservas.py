@@ -2,10 +2,11 @@ from nicegui import ui, app
 from backend.reservas.registrar_reserva import registrar_reserva
 from backend.turnos.listar_turnos import listar_los_turnos
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
+from backend.reservas.listar_reservas import listar_reservas
 import sqlite3
 
 # Página de registar reserva
-def pagina_reservas(tabs,reservas_tab,tabla_reservas):
+def pagina_reservas(tabla_principal):
     metodos_pago = [
         'Efectivo',
         'Transferencia',
@@ -17,6 +18,8 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
         'Particular'
     ]
     def actualizar_listado():
+        tabla_principal.rows = listar_reservas(dniPaciente)
+        tabla_principal.update()
         tabla.rows = listar_los_turnos()
         tabla.update()
 
@@ -66,6 +69,7 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
                 dniPaciente
             )
             ui.notify('Turno reservado con éxito',color='green-500')
+            actualizar_listado()
         except sqlite3.IntegrityError:
             ui.notify('Turno ya reservado',color='red-500')
         except TurnoLlenoException:
@@ -87,6 +91,7 @@ def pagina_reservas(tabs,reservas_tab,tabla_reservas):
     ],
     rows=turnos,
     row_key='idTurno').classes('w-full overflow-hidden shadow-md')
+
     with tabla.add_slot('top-left'):
         ui.button(icon='sync',on_click=lambda: actualizar_listado()).props('flat')
 

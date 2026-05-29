@@ -23,4 +23,4 @@ def main_page():
         with ui.tab_panel('Mis reservas'):
             tabla_reservas = pagina_listar_reservas()
         with ui.tab_panel(reservar_tab):
-            pagina_reservas(tabs,reservas_tab,tabla_reservas)
+            pagina_reservas(tabla_reservas)

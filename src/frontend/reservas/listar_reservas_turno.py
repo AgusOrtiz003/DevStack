@@ -46,7 +46,7 @@ def pagina_listar_reservas_secretaria(idTurno: int):
         <q-td :props="props">
 
             <q-btn
-                v-if="props.row.estado != 'Confirmado'"
+                v-if="!['Confirmado', 'Cancelado'].includes(props.row.estado)"
                 label='Realizar check-in'
                 color="positive"
                 flat
