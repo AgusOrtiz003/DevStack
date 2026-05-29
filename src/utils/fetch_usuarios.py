@@ -51,9 +51,10 @@ def get_datos(dni):
 def eliminar_cuenta(dni):
     
     if(existe(dni)):
+        dniNuevo = str(dni) + 'X'
         conexion = sqlite3.connect('./src/backend/bdd.db')
         cur = conexion.cursor()
-        cur.execute("DELETE FROM Usuarios WHERE dni=?", (dni,))
+        cur.execute("UPDATE Usuarios SET dni=? WHERE dni=?", (dniNuevo,dni,))
         conexion.commit()
         conexion.close()
         logout()
