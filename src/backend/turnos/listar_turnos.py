@@ -9,7 +9,8 @@ def listar_los_turnos():
                         GROUP_CONCAT(DISTINCT k.apellido || ' ' || k.nombre) AS kinesiologos,
                         GROUP_CONCAT(tk.idKinesiologo) AS idsKinesiologos 
                         FROM turnos t INNER JOIN Turno_Kinesiologos tk ON t.idTurno = tk.idTurno
-                        INNER JOIN Kinesiologos k ON tk.idKinesiologo = k.idKinesiologo 
+                        INNER JOIN Kinesiologos k ON tk.idKinesiologo = k.idKinesiologo
+                        WHERE t.estado = "Activo" 
                         GROUP BY t.idTurno ORDER BY fecha ASC
         ''')
         resultados = cursor.fetchall()

@@ -45,7 +45,7 @@ def borrar_kinesiologo(cuit):
         cursor.execute("""
             SELECT idKinesiologo
             FROM Kinesiologos
-            WHERE cuit = ?
+            WHERE CUIT = ?
         """, (cuit,))
 
         kines = cursor.fetchone()
@@ -64,11 +64,11 @@ def borrar_kinesiologo(cuit):
         # =====================
         # DELETE
         # =====================
-
+        cuit_logico = f"{'*'}{cuit}"
         cursor.execute("""
-            DELETE FROM Kinesiologos
-            WHERE cuit = ?
-        """, (cuit,))
+            UPDATE Kinesiologos SET CUIT=?
+            WHERE CUIT=?
+        """, (cuit_logico,cuit,))
 
         conn.commit()
 

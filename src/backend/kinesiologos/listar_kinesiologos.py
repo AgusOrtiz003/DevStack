@@ -19,7 +19,7 @@ def obtener_kinesiologos():
 
     with sqlite3.connect(str(DB_PATH)) as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT idKinesiologo, CUIT, nombre, apellido FROM Kinesiologos ORDER BY apellido, nombre')
+        cursor.execute('SELECT idKinesiologo, CUIT, nombre, apellido FROM Kinesiologos WHERE CUIT NOT LIKE "*%" ORDER BY apellido, nombre')
         datos = cursor.fetchall()
         return datos
     
