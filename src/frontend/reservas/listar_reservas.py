@@ -5,9 +5,6 @@ from backend.reservas.cancelar_reserva import cancelar_reserva
 # Página de listado de reservas del paciente
 def pagina_listar_reservas():
 
-    def modificarReserva(idReserva):
-        ui.notify('Modificación exitosa')
-
     async def cancelar_y_actualizar(idReserva):
         with ui.dialog() as dialog, ui.card().classes('w-100'):
             ui.label('¿Desea cancelar la reserva?')
