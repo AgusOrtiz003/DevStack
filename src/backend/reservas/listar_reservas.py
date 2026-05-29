@@ -4,7 +4,7 @@ from datetime import datetime
 def listar_reservas(dniPac):
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
-        cursor.execute('SELECT r.idReserva, r.obraSocial, r.metodoPago, r.estado, t.fecha, t.hora, t.tratamiento FROM reservas r INNER JOIN turnos t ON r.idTurno = t.idTurno WHERE dniPaciente=? AND estado="Pendiente" ORDER BY 5 ASC',(dniPac,))
+        cursor.execute('SELECT r.idReserva, r.obraSocial, r.metodoPago, r.estado, t.fecha, t.hora, t.tratamiento FROM reservas r INNER JOIN turnos t ON r.idTurno = t.idTurno WHERE dniPaciente=? AND r.estado="Pendiente" ORDER BY 5 ASC',(dniPac,))
         resultados = cursor.fetchall()
         reservas = []
         for resul in resultados:
