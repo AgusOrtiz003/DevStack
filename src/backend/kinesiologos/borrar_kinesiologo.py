@@ -19,8 +19,6 @@ DB_PATH = BASE_DIR / 'backend' / 'bdd.db'
 
 def borrar_kinesiologo(cuit):
 
-    try:
-
         # =====================
         # VALIDAR INPUT
         # =====================
@@ -86,17 +84,6 @@ def borrar_kinesiologo(cuit):
         )
 
         return True
-
-    except Exception as e:
-
-        print(f'Error borrando kinesiólogo: {e}')
-
-        ui.notify(
-            'Error borrando kinesiólogo',
-            color='red-500'
-        )
-
-        return False
 
 # =========================
 # MODAL BORRAR

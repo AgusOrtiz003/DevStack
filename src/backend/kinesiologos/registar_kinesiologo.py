@@ -104,7 +104,7 @@ def modal_registrar_kinesiologo():
 
         apellido = ui.input("Apellido")
 
-        cuit = ui.input("CUIT")
+        cuit = ui.input("CUIT",validation={'CUIT no válido': lambda value: len(value) == 11})
 
         def guardar():
 
