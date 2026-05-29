@@ -29,7 +29,7 @@ def borrar_kinesiologo(cuit):
 
             ui.notify(
                 'Debe ingresar un CUIT',
-                color='warning'
+                color='red-500'
             )
 
             return False
@@ -56,11 +56,17 @@ def borrar_kinesiologo(cuit):
 
             ui.notify(
                 'No existe un kinesiólogo con ese CUIT',
-                color='negative'
+                color='red-500'
             )
 
             return False
 
+        cursor.execute('SELECT 1 FROM Turno_Kinesiologos WHERE CUIT=?',(cuit))
+        existe_kinesiologo = cursor.fetchone()
+        if existe_kinesiologo:
+            ui.notify('Kinesiólogo asignado a un turno',color='red-500')
+            return False
+        
         # =====================
         # DELETE
         # =====================
@@ -76,7 +82,7 @@ def borrar_kinesiologo(cuit):
 
         ui.notify(
             'Kinesiólogo eliminado correctamente',
-            color='positive'
+            color='green-500'
         )
 
         return True
@@ -87,7 +93,7 @@ def borrar_kinesiologo(cuit):
 
         ui.notify(
             'Error borrando kinesiólogo',
-            color='negative'
+            color='red-500'
         )
 
         return False
@@ -111,7 +117,8 @@ def modal_borrar_kinesiologo():
         # =====================
 
         cuit_input = ui.input(
-            'CUIT'
+            'CUIT',
+            validation={'CUIT no válido': lambda value: len(value) == 11}
         ).classes('w-full')
 
         # =====================
