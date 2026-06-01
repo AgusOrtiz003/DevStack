@@ -35,15 +35,6 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
 
-import smtplib
-
-from pathlib import Path
-
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-
-
 def enviar_mail(destinatario, nombre, apellido):
 
     remitente = "devstackar@gmail.com"
@@ -59,9 +50,9 @@ def enviar_mail(destinatario, nombre, apellido):
 
             <p>Hola <b>{nombre} {apellido}</b>.</p>
 
-            <p>Tu cuenta fue registrada correctamente.</p>
+            <p>Tu cuenta fue registrada correctamente en KinePro</p>
 
-            <p>Gracias por usar nuestra aplicación.</p>
+            <p>Gracias por usar el Sistema Especializado en Reservas</p>
 
         </div>
 
@@ -194,3 +185,4 @@ def enviar_mail(destinatario, nombre, apellido):
             'Error enviando mail:',
             e
         )
+
