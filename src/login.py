@@ -27,6 +27,11 @@ from backend.registro import registrar, cumple_edad, enviar_mail
 from frontend.pacientes.home import main_page as paciente_home
 from src.utils.fetch_usuarios import chequear_contraseña, get_datos, chequear_correo, existe, verificar_correo
 from pathlib import Path
+from backend.procesar_notificaciones_pendientes import procesar_notificaciones_pendientes
+from nicegui import background_tasks
+import asyncio
+
+
 
 # =========================
 # FONDO LOGIN / REGISTER
@@ -36,6 +41,17 @@ app.add_static_files(
     '/icons',
     str(ROOT_DIR / 'src' / 'frontend' / 'icons')
 )
+
+
+async def procesar_notificaciones_periodicamente():
+
+    while True:
+        try:
+            procesar_notificaciones_pendientes()
+        except Exception as e:
+            print(e)
+
+        await asyncio.sleep(15)
 
 def agregar_fondo_login():
 
@@ -216,7 +232,14 @@ def login(redirect_to: str = '/'):
 # RUN
 # =========================
 
+@app.on_startup
+async def iniciar_procesador_notificaciones():
+    background_tasks.create(
+        procesar_notificaciones_periodicamente()
+    )
+
 if __name__ in {'__main__', '__mp_main__'}:
+
 
     ui.run(
         storage_secret='THIS_NEEDS_TO_BE_CHANGED',
