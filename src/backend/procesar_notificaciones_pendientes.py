@@ -3,7 +3,13 @@ import sqlite3
 from datetime import date
 from datetime import timedelta
 
-from backend.crear_tabla_notificaciones import crear_tablas_notificaciones
+from backend.crear_tabla_notificaciones import (
+    crear_tablas_notificaciones
+)
+
+from backend.enviar_mail_notificacion import (
+    enviar_mail_notificacion
+)
 
 DB_PATH = 'src/backend/bdd.db'
 
@@ -42,6 +48,40 @@ def procesar_notificaciones_pendientes():
         fechaHoraCreacion
     ) in pendientes:
 
+        # =========================
+        # Obtener email del usuario
+        # =========================
+
+        cursor.execute("""
+            SELECT email
+            FROM Usuarios
+            WHERE dni = ?
+        """, (dniPaciente,))
+
+        resultado = cursor.fetchone()
+
+        if resultado:
+
+            email = resultado[0]
+
+            try:
+
+                enviar_mail_notificacion(
+                    email,
+                    asunto,
+                    mensaje
+                )
+
+            except Exception as e:
+
+                print(
+                    f'Error enviando mail a {email}: {e}'
+                )
+
+        # =========================
+        # Crear notificación interna
+        # =========================
+
         cursor.execute("""
             INSERT INTO Notificaciones (
                 dniPaciente,
@@ -59,6 +99,10 @@ def procesar_notificaciones_pendientes():
             mensaje,
             fechaHoraCreacion
         ))
+
+        # =========================
+        # Eliminar pendiente
+        # =========================
 
         cursor.execute("""
             DELETE FROM NotificacionesPendientes
