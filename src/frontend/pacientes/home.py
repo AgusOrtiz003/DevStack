@@ -114,7 +114,9 @@ def main_page():
                     marcar_como_leidas()
 
                     if badge:
+                        badge.text= 0
                         badge.visible = False
+                        badge.update()
 
                     notificaciones = obtener_notificaciones()
 
@@ -193,13 +195,21 @@ def main_page():
                 on_click=mostrar_notificaciones
             ).props('flat round color=white'):
 
-                if cantidad > 0:
+                badge = ui.badge(
+                    str(cantidad)
+                ).props(
+                    'floating color=red'
+                )
+            
+            def actualizar_badge():
 
-                    badge = ui.badge(
-                        str(cantidad)
-                    ).props(
-                        'floating color=red'
-                    )
+                cantidad = obtener_no_leidas()
+
+                badge.text= str(cantidad)
+                
+                badge.visible = cantidad > 0
+
+                badge.update()
 
             ui.button(
                 icon='account_circle',
@@ -214,6 +224,12 @@ def main_page():
             ).props(
                 'flat round color=white'
             )
+ 
+        ui.timer(
+            5.0,
+            actualizar_badge
+        )
+
 
     with ui.tab_panels(
         tabs,
