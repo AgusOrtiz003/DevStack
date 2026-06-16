@@ -62,3 +62,22 @@ def crear_turno(
             ))
         conexion.commit()
     conexion.close()
+
+
+def crear_turnos(
+    fechas,
+    hora,
+    tratamiento,
+    cupo_maximo,
+    kinesiologos
+):
+
+    for fecha in fechas:
+
+        crear_turno(
+            fecha,
+            hora,
+            tratamiento,
+            cupo_maximo,
+            kinesiologos
+        )
