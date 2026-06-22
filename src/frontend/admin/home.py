@@ -16,8 +16,9 @@ from backend.kinesiologos.registar_kinesiologo import modal_registrar_kinesiolog
 from backend.kinesiologos.borrar_kinesiologo import modal_borrar_kinesiologo
 from backend.kinesiologos.listar_kinesiologos import obtener_kinesiologos
 from backend.kinesiologos.buscar_kinesiologo import modal_buscar_kinesiologos
-
-
+from backend.listar_pacientes import obtener_pacientes
+from backend.banear_paciente import modal_cambiar_estado_paciente
+from backend.buscar_pacientes import modal_buscar_pacientes
 from frontend.admin.cambiar_rol import cambiar_rol_page
 from frontend.turnos.cancelar_turno import pagina_cancelar_turno
 from frontend.turnos.listar_turnos import pagina_listar_turnos_pendientes
@@ -34,6 +35,7 @@ def main_page() -> None:
             with ui.tabs() as tabs:
                 ui.tab('Inicio', icon='home')
                 ui.tab('Kinesiologos', icon='groups')
+                ui.tab('Pacientes', icon='people')
                 ui.tab('Cambiar Rol', icon='event')
                 ui.tab('Turnos pendientes',icon='calendar_month')
                 ui.tab('Reservar turno',icon='event')
@@ -82,6 +84,7 @@ def main_page() -> None:
                     icon='search',
                     on_click=lambda: modal_buscar_kinesiologos(renderizar_tabla)
                 )
+        
 
             tabla_container = ui.column().classes('w-full mt-4')
 
@@ -111,6 +114,104 @@ def main_page() -> None:
 
             renderizar_tabla(obtener_kinesiologos())
 
+        with ui.tab_panel('Pacientes'):
+
+            ui.label(
+                'Listado de Pacientes'
+            ).classes('text-3xl font-bold')
+
+            ui.separator()
+
+            with ui.row():
+
+                ui.button(
+                    'Banear/Desbanear',
+                    icon='block',
+                    on_click=modal_cambiar_estado_paciente
+                )
+                ui.button(
+                    'Buscar / Filtrar',
+                    icon='search',
+                    on_click=lambda: modal_buscar_pacientes(
+                        renderizar_tabla_pacientes
+                    )
+                )
+
+            tabla_pacientes_container = ui.column().classes('w-full mt-4')
+
+
+            def renderizar_tabla_pacientes(datos=None):
+
+                tabla_pacientes_container.clear()
+
+                pacientes = datos if datos is not None else obtener_pacientes()
+
+
+
+                columnas = [
+                    {
+                        'name': 'dni',
+                        'label': 'DNI',
+                        'field': 'dni'
+                    },
+                    {
+                        'name': 'nombre',
+                        'label': 'Nombre',
+                        'field': 'nombre'
+                    },
+                    {
+                        'name': 'apellido',
+                        'label': 'Apellido',
+                        'field': 'apellido'
+                    },
+                    {
+                        'name': 'email',
+                        'label': 'Email',
+                        'field': 'email'
+                    },
+                    {
+                        'name': 'fechaNac',
+                        'label': 'Fecha Nac.',
+                        'field': 'fechaNac'
+                    },
+                    {
+                        'name': 'rol',
+                        'label': 'Rol',
+                        'field': 'rol'
+                    }
+                ]
+
+                rows = [
+                    {
+                        'dni': p[0],
+                        'nombre': p[1],
+                        'apellido': p[2],
+                        'email': p[3],
+                        'fechaNac': p[4],
+                        'rol': '🚫 Baneado' if p[5] == 'Baneado' else 'Paciente'
+                    }
+                    for p in pacientes
+                ]
+
+                with tabla_pacientes_container:
+
+                    tabla = ui.table(
+                        columns=columnas,
+                        rows=rows,
+                        row_key='id'
+                    ).classes('w-full')
+
+                    with tabla.add_slot('top-left'):
+
+                        ui.button(
+                            icon='sync',
+                            on_click=lambda: renderizar_tabla_pacientes(
+                                obtener_pacientes()
+                            )
+                        ).props('flat')
+
+            renderizar_tabla_pacientes()
+        
         with ui.tab_panel('Cambiar Rol').classes(
             'w-full items-center justify-center'
         ).style(
