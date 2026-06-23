@@ -19,6 +19,8 @@ from backend.kinesiologos.buscar_kinesiologo import modal_buscar_kinesiologos
 from backend.listar_pacientes import obtener_pacientes
 from backend.banear_paciente import modal_cambiar_estado_paciente
 from backend.buscar_pacientes import modal_buscar_pacientes
+from backend.listar_secretarias import obtener_secretarias
+from backend.buscar_secretarias import modal_buscar_secretarias
 from frontend.admin.cambiar_rol import cambiar_rol_page
 from frontend.turnos.cancelar_turno import pagina_cancelar_turno
 from frontend.turnos.listar_turnos import pagina_listar_turnos_pendientes
@@ -35,6 +37,7 @@ def main_page() -> None:
             with ui.tabs() as tabs:
                 ui.tab('Inicio', icon='home')
                 ui.tab('Kinesiologos', icon='groups')
+                ui.tab('Secretarias', icon='badge')
                 ui.tab('Pacientes', icon='people')
                 ui.tab('Cambiar Rol', icon='event')
                 ui.tab('Turnos pendientes',icon='calendar_month')
@@ -198,7 +201,7 @@ def main_page() -> None:
                     tabla = ui.table(
                         columns=columnas,
                         rows=rows,
-                        row_key='id'
+                        row_key='dni'
                     ).classes('w-full')
 
                     with tabla.add_slot('top-left'):
@@ -211,6 +214,104 @@ def main_page() -> None:
                         ).props('flat')
 
             renderizar_tabla_pacientes()
+        
+        with ui.tab_panel('Secretarias'):
+
+            ui.label(
+                'Listado de Secretarias'
+            ).classes('text-3xl font-bold')
+
+            ui.separator()
+
+            with ui.row():
+
+                ui.button(
+                    'Buscar / Filtrar',
+                    icon='search',
+                    on_click=lambda:
+                    modal_buscar_secretarias(
+                        renderizar_tabla_secretarias
+                    )
+                )
+
+            tabla_secretarias_container = ui.column().classes(
+                'w-full mt-4'
+            )
+
+            def renderizar_tabla_secretarias(datos=None):
+
+                tabla_secretarias_container.clear()
+
+                secretarias = (
+                    datos
+                    if datos is not None
+                    else obtener_secretarias()
+                )
+
+                columnas = [
+                    {
+                        'name': 'dni',
+                        'label': 'DNI',
+                        'field': 'dni'
+                    },
+                    {
+                        'name': 'nombre',
+                        'label': 'Nombre',
+                        'field': 'nombre'
+                    },
+                    {
+                        'name': 'apellido',
+                        'label': 'Apellido',
+                        'field': 'apellido'
+                    },
+                    {
+                        'name': 'email',
+                        'label': 'Email',
+                        'field': 'email'
+                    },
+                    {
+                        'name': 'fechaNac',
+                        'label': 'Fecha Nacimiento',
+                        'field': 'fechaNac'
+                    },
+                    {
+                        'name': 'rol',
+                        'label': 'Rol',
+                        'field': 'rol'
+                    }
+                ]
+
+                rows = [
+                    {
+                        'dni': s[0],
+                        'nombre': s[1],
+                        'apellido': s[2],
+                        'email': s[3],
+                        'fechaNac': s[4],
+                        'rol': s[5]
+                    }
+                    for s in secretarias
+                ]
+
+                with tabla_secretarias_container:
+
+                    tabla = ui.table(
+                        columns=columnas,
+                        rows=rows,
+                        row_key='dni'
+                    ).classes('w-full')
+
+                    with tabla.add_slot('top-left'):
+
+                        ui.button(
+                            icon='sync',
+                            on_click=lambda:
+                            renderizar_tabla_secretarias(
+                                obtener_secretarias()
+                            )
+                        ).props('flat')
+
+            renderizar_tabla_secretarias()
         
         with ui.tab_panel('Cambiar Rol').classes(
             'w-full items-center justify-center'
