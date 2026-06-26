@@ -81,6 +81,17 @@ def pagina_modificar_turno(tabla_principal):
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupoActual', 'label': 'Cupos disponibles', 'field': 'cupoActual'},
         {'name': 'cupoMaximo', 'label': 'Cupo máximo', 'field': 'cupoMaximo'},
+                {
+            'name': 'cupoRecurrenteActual',
+            'label': 'Cupos recurrentes disponibles',
+            'field': 'cupoRecurrenteActual'
+        },
+        {
+            'name': 'cupoRecurrenteMaximo',
+            'label': 'Cupo recurrente máximo',
+            'field': 'cupoRecurrenteMaximo'
+        },
+
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],

@@ -18,7 +18,8 @@ def pagina_crear_turno(tabla_principal):
         hora,
         tratamiento,
         kinesiologos,
-        cupo_max
+        cupo_max,
+        cupo_recurrente_max
     ):
 
         if (
@@ -42,6 +43,7 @@ def pagina_crear_turno(tabla_principal):
                 hora.value,
                 tratamiento.value,
                 cupo_max.value,
+                cupo_recurrente_max.value,
                 kinesiologos.value
             )
 
@@ -141,6 +143,15 @@ def pagina_crear_turno(tabla_principal):
                         'outlined dense'
                     )
 
+                    cupo_recurrente_select = ui.number(
+                        label='Cupo recurrente máximo',
+                        value=0,
+                        min=0,
+                        max=20
+                    ).classes('w-full').props(
+                        'outlined dense'
+                    )
+
                     ui.button(
                         'Crear turnos',
                         on_click=lambda: crear_turno_pagina(
@@ -148,7 +159,8 @@ def pagina_crear_turno(tabla_principal):
                             hora_select,
                             tratamiento_select,
                             kinesiologos_select,
-                            cupo_select
+                            cupo_select,
+                            cupo_recurrente_select
                         )
                     ).classes(
                         'w-full mt-auto'

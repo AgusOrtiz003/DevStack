@@ -96,6 +96,7 @@ def pagina_reservas_secretaria(tabla_principal):
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupos', 'label': 'Cupos Disponibles', 'field': 'cupoActual'},
+        {'name': 'cuposRecurrentes','label': 'Cupos Recurrentes Disponibles','field': 'cupoRecurrenteActual'},
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],
