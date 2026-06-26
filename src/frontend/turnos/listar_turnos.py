@@ -17,13 +17,26 @@ def pagina_listar_turnos_pendientes():
         {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
+
         {'name': 'cupoActual', 'label': 'Cupos disponibles', 'field': 'cupoActual'},
         {'name': 'cupoMaximo', 'label': 'Cupo máximo', 'field': 'cupoMaximo'},
+
+        {
+            'name': 'cupoRecurrenteActual',
+            'label': 'Cupos recurrentes disponibles',
+            'field': 'cupoRecurrenteActual'
+        },
+        {
+            'name': 'cupoRecurrenteMaximo',
+            'label': 'Cupo recurrente máximo',
+            'field': 'cupoRecurrenteMaximo'
+        },
+
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],
     rows=turnos,
-    row_key='idReserva').classes('w-full overflow-hidden shadow-md')
+    row_key='idTurno').classes('w-full overflow-hidden shadow-md')
 
     with tabla.add_slot('top-left'):
         ui.button(icon='sync',on_click=lambda: actualizar_listado()).props('flat')
