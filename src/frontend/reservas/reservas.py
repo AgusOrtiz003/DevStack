@@ -61,7 +61,7 @@ def pagina_reservas(tabla_principal):
     ]
     def actualizar_listado():
         todas = listar_reservas(dniPaciente)
-        tabla_principal.rows = [r for r in todas if r['estado'] == 'Pendiente' and r['idReservaRecurrente'] is None]
+        tabla_principal.rows = [r for r in todas if r['estado'] == 'Pendiente' and not r['idReservaRecurrente']]
         tabla_principal.update()
         tabla.rows = listar_los_turnos()
         tabla.update()  
@@ -220,7 +220,7 @@ def pagina_reservas(tabla_principal):
                 'Viernes'
             ],
             label='Día'
-        ).props('outlined')
+        ).props('outlined').classes('w-50')
 
         hora_select = ui.select(
             options=[
@@ -234,7 +234,7 @@ def pagina_reservas(tabla_principal):
                 '20:00'
             ],
             label='Hora'
-        ).props('outlined')
+        ).props('outlined').classes('w-50')
 
         ui.button(
             'Filtrar',

@@ -168,7 +168,7 @@ def pagina_listar_reservas():
                         ui.label(reserva['hora'])
 
                     ui.separator()
-                    ui.label('Total: $50.000 ARS').classes('text-xl font-semibold mt-2')
+                    ui.label('Total: $5.000 ARS').classes('text-xl font-semibold mt-2')
                     ui.label('O si preferís, pagá desde el navegador:').classes('text-xs text-gray-500 mt-2')
                     ui.button(
                         'Ir a pagar',
@@ -219,8 +219,8 @@ def pagina_listar_reservas():
     for r in reservas_recurrentes:
         r['periodo'] = f"{r['fecha_desde']} - {r['fecha_hasta']}"
 
-    pendientes = [r for r in reservas if r['estado'] == 'Pendiente' and r['idReservaRecurrente'] is None]
-    pagadas    = [r for r in reservas if r['estado'] == 'Pagado' and r['idReservaRecurrente'] is None]
+    pendientes = [r for r in reservas if r['estado'] == 'Pendiente' and not r['idReservaRecurrente']]
+    pagadas    = [r for r in reservas if r['estado'] == 'Pagado' and not r['idReservaRecurrente']]
     canceladas = [r for r in reservas if r['estado'] == 'Cancelado']
 
     columnas_con_accion = [
@@ -252,8 +252,8 @@ def pagina_listar_reservas():
         nuevas_recurrentes = listar_reservas_recurrentes(dniPaciente)
         for r in nuevas_recurrentes:
             r['periodo'] = f"{r['fecha_desde']} - {r['fecha_hasta']}"
-        tabla_pendientes.rows = [r for r in nuevas if r['estado'] == 'Pendiente' and r['idReservaRecurrente'] is None]
-        tabla_pagadas.rows    = [r for r in nuevas if r['estado'] == 'Pagado' and r['idReservaRecurrente'] is None]
+        tabla_pendientes.rows = [r for r in nuevas if r['estado'] == 'Pendiente' and not r['idReservaRecurrente']]
+        tabla_pagadas.rows    = [r for r in nuevas if r['estado'] == 'Pagado' and not r['idReservaRecurrente']]
         tabla_canceladas.rows = [r for r in nuevas if r['estado'] == 'Cancelado']
         tabla_recurrentes.rows = nuevas_recurrentes
         tabla_pendientes.update()

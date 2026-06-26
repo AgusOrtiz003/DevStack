@@ -2,7 +2,7 @@ import sqlite3
 
 from backend.usuarios.registro import existe
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
-from backend.notificaciones import crear_notificacion_pendiente
+from backend.notificaciones.crear_notificacion_pendiente import crear_notificacion_pendiente
 
 
 def registrar_reserva(idTurno, obraSoc, metPag, dniPac):
