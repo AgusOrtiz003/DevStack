@@ -1,7 +1,6 @@
 from nicegui import app, ui
 from frontend.reservas.reservas import pagina_reservas
 from frontend.reservas.listar_reservas import pagina_listar_reservas
-from frontend.perfil import perfil
 from src.utils.fetch_usuarios import logout
 
 @ui.page('/Paciente/home')

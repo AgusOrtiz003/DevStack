@@ -25,6 +25,7 @@ sys.path.append(str(src_path))
 from nicegui import app, ui
 from backend.registro import registrar, cumple_edad
 from frontend.pacientes.home import main_page as paciente_home
+from frontend.secretarias.home import main_page as secretaria_home
 from src.utils.fetch_usuarios import chequear_contraseña, get_datos, chequear_correo, existe, verificar_correo
 # in reality users passwords would obviously need to be hashed
 passwords = {'user1': 'pass1', 'user2': 'pass2'}

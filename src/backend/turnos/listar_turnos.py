@@ -11,7 +11,7 @@ def listar_los_turnos():
                         FROM turnos t INNER JOIN Turno_Kinesiologos tk ON t.idTurno = tk.idTurno
                         INNER JOIN Kinesiologos k ON tk.idKinesiologo = k.idKinesiologo
                         WHERE t.estado = "Activo" 
-                        GROUP BY t.idTurno ORDER BY fecha ASC
+                        GROUP BY t.idTurno ORDER BY fecha ASC, hora ASC
         ''')
         resultados = cursor.fetchall()
         turnos = []

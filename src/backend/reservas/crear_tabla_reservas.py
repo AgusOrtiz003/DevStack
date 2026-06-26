@@ -12,7 +12,7 @@ def crear_tabla_reserva():
                 idTurno INTEGER NOT NULL,
                 obraSocial TEXT,
                 metodoPago TEXT,
-                estado TEXT NOT NULL DEFAULT 'Pendiente',
+                estado TEXT NOT NULL DEFAULT 'Sin Pagar',
                 fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (idTurno) REFERENCES turnos(idTurno),
                 UNIQUE(dniPaciente, idTurno)
