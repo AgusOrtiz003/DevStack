@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 
-from backend.crear_tabla_notificaciones import crear_tablas_notificaciones
+from backend.notificaciones.crear_tabla_notificaciones import crear_tablas_notificaciones
 
 DB_PATH = 'src/backend/bdd.db'
 

@@ -3,13 +3,9 @@ import sqlite3
 from datetime import date
 from datetime import timedelta
 
-from backend.crear_tabla_notificaciones import (
-    crear_tablas_notificaciones
-)
+from backend.notificaciones.crear_tabla_notificaciones import crear_tablas_notificaciones
 
-from backend.enviar_mail_notificacion import (
-    enviar_mail_notificacion
-)
+from backend.notificaciones.enviar_mail_notificacion import enviar_mail_notificacion
 
 DB_PATH = 'src/backend/bdd.db'
 

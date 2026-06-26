@@ -23,12 +23,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 src_path=pathlib.Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
 from nicegui import app, ui
-from backend.registro import registrar, cumple_edad, enviar_mail
+from backend.usuarios.registro import cumple_edad, registrar, enviar_mail
 from frontend.pacientes.home import main_page as paciente_home
 from frontend.secretarias.home import main_page as secretaria_home
+from frontend.admin.home import main_page as admin_home
 from src.utils.fetch_usuarios import chequear_contraseña, get_datos, chequear_correo, existe, verificar_correo
 from pathlib import Path
-from backend.procesar_notificaciones_pendientes import procesar_notificaciones_pendientes
+from backend.notificaciones.procesar_notificaciones_pendientes import procesar_notificaciones_pendientes
 from nicegui import background_tasks
 import asyncio
 
