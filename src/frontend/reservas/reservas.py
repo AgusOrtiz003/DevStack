@@ -3,6 +3,8 @@ from backend.reservas.registrar_reserva import registrar_reserva
 from backend.turnos.listar_turnos import listar_los_turnos
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 from backend.reservas.listar_reservas import listar_reservas
+from backend.listas_de_espera.agregar_a_lista_espera import agregar_a_lista_espera
+from backend.turnos.verificar_cupo_disponible import verificar_cupo_disponible
 from src.backend.reservas.registrar_reserva_recurrente import registrar_reservas_recurrentes
 from datetime import datetime
 
@@ -196,17 +198,21 @@ def pagina_reservas(tabla_principal):
 
     async def reservar_turno(turno):
         with ui.dialog() as dialog, ui.card().classes('w-96'):
+
             with ui.row().classes('items-center gap-2'):
                 ui.icon('event_available').classes('text-blue-400')
                 ui.label('Reservar turno').classes('text-lg font-semibold')
+
             ui.separator()
 
             with ui.card().classes('w-full bg-blue-50'):
                 with ui.grid(columns=2).classes('w-full gap-x-4 gap-y-1 text-sm'):
                     ui.label('Fecha:').classes('text-gray-500')
                     ui.label(turno['fecha'])
+
                     ui.label('Hora:').classes('text-gray-500')
                     ui.label(turno['hora'])
+
                     ui.label('Tratamiento:').classes('text-gray-500')
                     ui.label(turno['tratamiento'])
 
@@ -214,6 +220,7 @@ def pagina_reservas(tabla_principal):
                 options=obras_sociales,
                 label='Obra social'
             ).classes('w-full').props('outlined')
+
             metodo_select = ui.select(
                 options=metodos_pago,
                 label='Método de pago'
@@ -221,25 +228,64 @@ def pagina_reservas(tabla_principal):
 
             with ui.row().classes('w-full justify-end gap-2 mt-2'):
                 ui.button('Cancelar', on_click=lambda: dialog.submit(None)).props('flat')
-                ui.button('Confirmar reserva', on_click=lambda: dialog.submit({
-                    'obra': obra_select.value,
-                    'metodo': metodo_select.value,
-                })).props('color=primary')
+
+                ui.button(
+                    'Confirmar',
+                    on_click=lambda: dialog.submit({
+                        'obra': obra_select.value,
+                        'metodo': metodo_select.value
+                    })
+                ).props('color=primary')
 
         resultado = await dialog
+
         if not resultado:
             return
-        if not resultado['obra'] or not resultado['metodo']:
+
+        if not resultado.get('obra') or not resultado.get('metodo'):
             ui.notify('Seleccione todos los datos', color='red')
             return
-        try:
-            registrar_reserva(turno['idTurno'], resultado['obra'], resultado['metodo'], dniPaciente)
-            ui.notify('Turno reservado con éxito', color='green')
-            actualizar_listado()
-        except sqlite3.IntegrityError:
-            ui.notify('Ya tenés este turno reservado', color='red')
-        except TurnoLlenoException:
-            ui.notify('El turno está lleno', color='red')
+
+        # =========================
+        # 🔥 ACÁ RECIÉN CHEQUEÁS CUPOS
+        # =========================
+        if verificar_cupo_disponible(turno['idTurno']):
+            try:
+                registrar_reserva(
+                    turno['idTurno'],
+                    resultado['obra'],
+                    resultado['metodo'],
+                    dniPaciente
+                )
+
+                ui.notify('Turno reservado con éxito', color='green')
+                actualizar_listado()
+
+            except sqlite3.IntegrityError:
+                ui.notify('Ya tenés este turno reservado', color='red')
+
+        else:
+
+            with ui.dialog() as espera_dialog, ui.card().classes('w-96'):
+                ui.label(
+                    'El turno no tiene cupos disponibles. '
+                    '¿Desea entrar en lista de espera?'
+                )
+
+                with ui.row().classes('w-full justify-end gap-2 mt-2'):
+                    ui.button(
+                        'No',
+                        on_click=lambda: espera_dialog.submit(False)
+                    ).props('flat')
+
+                    ui.button(
+                        'Sí',
+                        on_click=lambda: espera_dialog.submit(True)
+                    ).props('color=primary')
+
+            if await espera_dialog:
+                agregar_a_lista_espera(turno['idTurno'], dniPaciente,resultado['obra'], resultado['metodo'])
+                ui.notify('Agregado a lista de espera', color='green')
 
     dniPaciente = app.storage.user.get('dni')
     turnos=listar_los_turnos()
