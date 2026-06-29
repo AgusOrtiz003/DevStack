@@ -193,7 +193,7 @@ def pagina_reservas(tabla_principal):
         todas = listar_reservas(dniPaciente)
         tabla_principal.rows = [r for r in todas if r['estado'] == 'Pendiente' and not r['idReservaRecurrente']]
         tabla_principal.update()
-        tabla.rows = listar_los_turnos()
+        tabla.rows = listar_los_turnos()[:100]
         tabla.update()
 
     async def reservar_turno(turno):

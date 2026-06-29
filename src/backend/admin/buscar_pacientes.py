@@ -14,8 +14,7 @@ def modal_buscar_pacientes(callback):
             [
                 'Nombre',
                 'Apellido',
-                'DNI',
-                'Email'
+                'DNI'
             ],
             value='Nombre',
             label='Buscar por'

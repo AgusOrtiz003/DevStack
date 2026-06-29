@@ -58,6 +58,18 @@ def modal_cambiar_estado_paciente():
             apellido = usuario[2]
             rol_actual = usuario[3]
 
+            if rol_actual == 'Administrador':
+
+                conn.close()
+
+                ui.notify(
+                    'No se puede modificar el estado de un administrador',
+                    color='negative'
+                )
+
+                return
+
+
             if rol_actual == 'Paciente':
                 nuevo_rol = 'Baneado'
 

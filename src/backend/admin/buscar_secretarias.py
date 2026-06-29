@@ -14,8 +14,7 @@ def modal_buscar_secretarias(callback):
             [
                 'Nombre',
                 'Apellido',
-                'DNI',
-                'Email'
+                'DNI'
             ],
             value='Nombre',
             label='Buscar por'
