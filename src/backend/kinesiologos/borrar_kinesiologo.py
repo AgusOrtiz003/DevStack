@@ -19,8 +19,6 @@ DB_PATH = BASE_DIR / 'backend' / 'bdd.db'
 
 def borrar_kinesiologo(cuit):
 
-    try:
-
         # =====================
         # VALIDAR INPUT
         # =====================
@@ -29,7 +27,7 @@ def borrar_kinesiologo(cuit):
 
             ui.notify(
                 'Debe ingresar un CUIT',
-                color='warning'
+                color='red-500'
             )
 
             return False
@@ -43,9 +41,9 @@ def borrar_kinesiologo(cuit):
         # =====================
 
         cursor.execute("""
-            SELECT id
+            SELECT idKinesiologo
             FROM Kinesiologos
-            WHERE cuit = ?
+            WHERE CUIT = ?
         """, (cuit,))
 
         kines = cursor.fetchone()
@@ -56,19 +54,25 @@ def borrar_kinesiologo(cuit):
 
             ui.notify(
                 'No existe un kinesiólogo con ese CUIT',
-                color='negative'
+                color='red-500'
             )
 
             return False
 
+        cursor.execute('SELECT 1 FROM Turno_Kinesiologos WHERE idKinesiologo=?',(kines[0],))
+        existe_kinesiologo = cursor.fetchone()
+        if existe_kinesiologo:
+            ui.notify('Kinesiólogo asignado a un turno',color='red-500')
+            return False
+        
         # =====================
         # DELETE
         # =====================
-
+        cuit_logico = f"{'*'}{cuit}"
         cursor.execute("""
-            DELETE FROM Kinesiologos
-            WHERE cuit = ?
-        """, (cuit,))
+            UPDATE Kinesiologos SET CUIT=?
+            WHERE CUIT=?
+        """, (cuit_logico,cuit,))
 
         conn.commit()
 
@@ -76,21 +80,10 @@ def borrar_kinesiologo(cuit):
 
         ui.notify(
             'Kinesiólogo eliminado correctamente',
-            color='positive'
+            color='green-500'
         )
 
         return True
-
-    except Exception as e:
-
-        print(f'Error borrando kinesiólogo: {e}')
-
-        ui.notify(
-            'Error borrando kinesiólogo',
-            color='negative'
-        )
-
-        return False
 
 # =========================
 # MODAL BORRAR
@@ -111,7 +104,8 @@ def modal_borrar_kinesiologo():
         # =====================
 
         cuit_input = ui.input(
-            'CUIT'
+            'CUIT',
+            validation={'CUIT no válido': lambda value: len(value) == 11}
         ).classes('w-full')
 
         # =====================

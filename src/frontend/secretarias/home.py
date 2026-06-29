@@ -12,10 +12,8 @@ from src.utils.fetch_usuarios import *
 # Página de secretaria
 @ui.page('/Secretaria/home')
 def main_page() -> None:
-
-    turnos = listar_los_turnos()
         
-    with ui.header().classes(replace='row items-center gap-4') as header:
+    with ui.header().classes(replace='row items-center gap-4'):
         with ui.tabs() as tabs:
             ui.tab('Inicio',icon='home')
             ui.tab('Turnos pendientes',icon='calendar_month')

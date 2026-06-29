@@ -1,11 +1,11 @@
 from nicegui import ui
 
 from backend.turnos.listar_turnos import listar_los_turnos
-from backend.turnos.eliminar_turno import eliminar_turno
+from backend.turnos.cancelar_turno import cancelar_turno
 
 def pagina_cancelar_turno():
 
-    async def cancelar_turno(turno):
+    async def dialog_cancelar_turno(turno):
         with ui.dialog() as dialog, ui.card():
 
             ui.label(
@@ -29,7 +29,7 @@ def pagina_cancelar_turno():
         if not resultado:
             return
 
-        eliminar_turno(turno['idTurno'])
+        cancelar_turno(turno['idTurno'])
 
         actualizar_listado()
 
@@ -77,7 +77,7 @@ def pagina_cancelar_turno():
 
     tabla.on(
         'cancelar',
-        lambda e: cancelar_turno(e.args)
+        lambda e: dialog_cancelar_turno(e.args)
     )
 
     return tabla

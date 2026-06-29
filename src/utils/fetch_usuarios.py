@@ -1,4 +1,5 @@
 import sqlite3
+import re
 from nicegui import ui,app
 
 def existe(dni):
@@ -50,16 +51,28 @@ def get_datos(dni):
 def eliminar_cuenta(dni):
     
     if(existe(dni)):
+        dniNuevo = str(dni) + 'X'
         conexion = sqlite3.connect('./src/backend/bdd.db')
         cur = conexion.cursor()
-        cur.execute("DELETE FROM Usuarios WHERE dni=?", (dni,))
+        cur.execute("UPDATE Usuarios SET dni=? WHERE dni=?", (dniNuevo,dni,))
         conexion.commit()
         conexion.close()
         logout()
 
 def logout() -> None:
-        app.storage.user.clear()
-        ui.navigate.to('/login')
+
+    app.storage.user.clear()
+
+    ui.notify(
+        'Cierre de sesión exitoso',
+        color='positive'
+    )
+
+    ui.timer(
+        2.0,
+        lambda: ui.navigate.to('/login'),
+        once=True
+    )
         
 def cambiar_correo(correo,dni):
     ''' Recibe por parametro un correo y DNI, procede a cambiar el correo a dicho DNI'''
@@ -67,6 +80,7 @@ def cambiar_correo(correo,dni):
     conexion = sqlite3.connect('./src/backend/bdd.db')
     cur = conexion.cursor()
     cur.execute("UPDATE Usuarios SET email = ? WHERE dni= ?", (correo,dni))
+    conexion.commit()
     conexion.close()
     
     
@@ -77,3 +91,8 @@ def chequear_correo(correo):
     cur.execute("SELECT email FROM Usuarios WHERE email=?", (correo,))
     resultado = cur.fetchone()
     return resultado is not None
+
+def verificar_correo(correo):
+    '''Verifica que el correo respete un patron '''
+    patron = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+    return re.match(patron, correo) is not None
