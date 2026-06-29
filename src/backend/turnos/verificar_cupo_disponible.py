@@ -11,7 +11,7 @@ def verificar_cupo_disponible(id_turno):
     cursor.execute("""
         SELECT cupoActual, cupoMaximo
         FROM turnos
-        WHERE id = ?
+        WHERE idTurno = ?
     """, (id_turno,))
 
     resultado = cursor.fetchone()
