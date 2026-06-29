@@ -174,12 +174,31 @@ def login(redirect_to: str = '/'):
 
         return RedirectResponse('/')
 
-    def try_login(user,passwd) -> None:
-        if(chequear_contraseña(user, passwd)):
-            datos=get_datos(user)
-            username=datos['nombre']
-            rol=datos['rol']
-            app.storage.user.update(username=username, authenticated=True, dni=user, rol=rol)
+    def try_login(user, passwd) -> None:
+
+        if chequear_contraseña(user, passwd):
+
+            datos = get_datos(user)
+
+            if datos['rol'] == 'Baneado':
+
+                ui.notify(
+                    'Tu cuenta ha sido suspendida',
+                    color='negative'
+                )
+
+                return
+
+            username = datos['nombre']
+            rol = datos['rol']
+
+            app.storage.user.update(
+                username=username,
+                authenticated=True,
+                dni=user,
+                rol=rol
+            )
+
             ui.navigate.to(f'/{rol}/home')
 
         else:
