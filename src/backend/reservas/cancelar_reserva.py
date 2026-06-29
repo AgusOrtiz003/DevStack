@@ -1,5 +1,6 @@
 import sqlite3
-
+from backend.listas_de_espera.quitar_de_lista_espera import quitar_de_lista_espera,buscar_en_lista_espera
+from backend.reservas.registrar_reserva import registrar_reserva
 def cancelar_reserva(idReserva):
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
@@ -10,7 +11,11 @@ def cancelar_reserva(idReserva):
             return
 
         idTurno = resultado[0]
-        cursor.execute('UPDATE turnos SET cupoActual = MAX(cupoActual - 1, 0) WHERE idTurno=?',(idTurno,))
         cursor.execute('UPDATE reservas SET estado = "Cancelado" WHERE idReserva=?',(idReserva,))
+        cursor.execute('UPDATE turnos SET cupoActual = MAX(cupoActual - 1, 0) WHERE idTurno=?',(idTurno,))
         conexion.commit()
     conexion.close()
+    dniPaciente = buscar_en_lista_espera(idTurno)
+    if dniPaciente:
+        registrar_reserva(idTurno, dniPaciente[1], dniPaciente[2], dniPaciente[0])
+        quitar_de_lista_espera(idTurno, dniPaciente[0])
