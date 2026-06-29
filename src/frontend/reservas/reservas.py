@@ -5,10 +5,73 @@ from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 from backend.reservas.listar_reservas import listar_reservas
 from src.backend.reservas.registrar_reserva_recurrente import registrar_reservas_recurrentes
 from datetime import datetime
+
 import sqlite3
 
+
 def pagina_reservas(tabla_principal):
-    
+
+    fecha_desde = None
+    fecha_hasta = None
+
+    fecha_desde_label = ui.label(
+        'Fecha desde: no seleccionada'
+    )
+
+    fecha_hasta_label = ui.label(
+        'Fecha hasta: no seleccionada'
+    )
+
+    async def seleccionar_fecha_desde():
+
+        nonlocal fecha_desde
+
+        with ui.dialog() as dialog, ui.card():
+
+            calendario = ui.date()
+
+            ui.button(
+                'Aceptar',
+                on_click=lambda: dialog.submit(
+                    calendario.value
+                )
+            )
+
+        resultado = await dialog
+
+        if resultado:
+
+            fecha_desde = resultado
+
+            fecha_desde_label.set_text(
+                f'Fecha desde: {resultado}'
+            )
+
+    async def seleccionar_fecha_hasta():
+
+        nonlocal fecha_hasta
+
+        with ui.dialog() as dialog, ui.card():
+
+            calendario = ui.date()
+
+            ui.button(
+                'Aceptar',
+                on_click=lambda: dialog.submit(
+                    calendario.value
+                )
+            )
+
+        resultado = await dialog
+
+        if resultado:
+
+            fecha_hasta = resultado
+
+            fecha_hasta_label.set_text(
+                f'Fecha hasta: {resultado}'
+            )
+
     dias_semana = {
     0: 'Lunes',
     1: 'Martes',
@@ -22,9 +85,66 @@ def pagina_reservas(tabla_principal):
 
     def aplicar_filtros():
 
-        if not dia_select.value or not hora_select.value:
-            tabla.rows = turnos_originales
-            tabla.update()
+        if not fecha_desde:
+            ui.notify(
+                'Seleccione una fecha desde',
+                color='red'
+            )
+            return
+
+
+        if not fecha_hasta:
+            ui.notify(
+                'Seleccione una fecha hasta',
+                color='red'
+            )
+            return
+
+
+        fecha_desde_dt = datetime.strptime(
+            fecha_desde,
+            '%Y-%m-%d'
+        )
+
+        fecha_hasta_dt = datetime.strptime(
+            fecha_hasta,
+            '%Y-%m-%d'
+        )
+
+        if fecha_desde_dt > fecha_hasta_dt:
+
+            ui.notify(
+                'La fecha desde no puede ser mayor a la fecha hasta',
+                color='red'
+            )
+
+            return
+
+        if not dia_select.value:
+
+            ui.notify(
+                'Debe seleccionar un día',
+                color='red'
+            )
+
+            return
+
+        if not hora_select.value:
+
+            ui.notify(
+                'Debe seleccionar una hora',
+                color='red'
+            )
+
+            return
+
+        if not tratamiento_select.value:
+
+            ui.notify(
+                'Debe seleccionar un tratamiento',
+                color='red'
+            )
+
             return
 
         filtrados = []
@@ -36,6 +156,11 @@ def pagina_reservas(tabla_principal):
                 '%d/%m/%Y'
             )
 
+            fecha_turno = datetime.strptime(
+                turno['fecha'],
+                '%d/%m/%Y'
+            )
+
             dia_turno = dias_semana.get(
                 fecha.weekday()
             )
@@ -43,10 +168,13 @@ def pagina_reservas(tabla_principal):
             if (
                 dia_turno == dia_select.value
                 and turno['hora'] == hora_select.value
+                and turno['tratamiento'] == tratamiento_select.value
+                and fecha_desde_dt <= fecha_turno <= fecha_hasta_dt
+
             ):
                 filtrados.append(turno)
 
-        tabla.rows = filtrados
+        tabla.rows = filtrados[:100]
         tabla.update()
 
     metodos_pago = [
@@ -64,7 +192,7 @@ def pagina_reservas(tabla_principal):
         tabla_principal.rows = [r for r in todas if r['estado'] == 'Pendiente' and not r['idReservaRecurrente']]
         tabla_principal.update()
         tabla.rows = listar_los_turnos()
-        tabla.update()  
+        tabla.update()
 
     async def reservar_turno(turno):
         with ui.dialog() as dialog, ui.card().classes('w-96'):
@@ -125,6 +253,13 @@ def pagina_reservas(tabla_principal):
                 color='red-500'
             )
 
+            return
+
+        if tabla.rows == turnos_originales:
+            ui.notify(
+                'Debe aplicar los filtros antes de reservar recurrentemente',
+                color='red-500'
+            )
             return
 
         turnos_filtrados = tabla.rows
@@ -236,6 +371,26 @@ def pagina_reservas(tabla_principal):
             label='Hora'
         ).props('outlined').classes('w-50')
 
+        tratamiento_select = ui.select(
+            options=[
+                'Tren superior',
+                'Tren medio',
+                'Tren inferior'
+            ],
+            label='Tratamiento'
+        ).props('outlined').classes('w-50')
+
+        ui.button(
+            'Seleccionar fecha desde',
+            on_click=seleccionar_fecha_desde
+        )
+
+        ui.button(
+            'Seleccionar fecha hasta',
+            on_click=seleccionar_fecha_hasta
+        )
+
+
         ui.button(
             'Filtrar',
             icon='search',
@@ -246,8 +401,9 @@ def pagina_reservas(tabla_principal):
 
             dia_select.value = None
             hora_select.value = None
+            tratamiento_select.value = None
 
-            tabla.rows = turnos_originales
+            tabla.rows = turnos_originales[:100]
             tabla.update()
 
         ui.button(
@@ -268,6 +424,7 @@ def pagina_reservas(tabla_principal):
     tabla = ui.table(
     columns=[
         {'name': 'fecha', 'label': 'Fecha', 'field': 'fecha'},
+        {'name': 'dia', 'label': 'Día', 'field': 'dia'},
         {'name': 'hora', 'label': 'Hora', 'field': 'hora'},
         {'name': 'tratamiento', 'label': 'Tratamiento', 'field': 'tratamiento'},
         {'name': 'cupos', 'label': 'Cupos Disponibles', 'field': 'cupoActual'},
@@ -275,10 +432,10 @@ def pagina_reservas(tabla_principal):
         {'name': 'kinesiologos', 'label': 'Kinesiólogo/s', 'field': 'kinesiologos'},
         {'name': 'accion', 'label': 'Accion', 'field': 'accion'},
     ],
-    rows=turnos,
+    rows=turnos[:100],
     row_key='idTurno').classes('w-full overflow-hidden shadow-md')
 
-    
+
 
     with tabla.add_slot('top-left'):
         ui.button(icon='sync',on_click=lambda: actualizar_listado()).props('flat')

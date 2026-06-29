@@ -47,10 +47,26 @@ def listar_los_turnos():
             ).strftime(
                 '%d/%m/%Y'
             )
+            dias_semana = {
+                0: 'Lunes',
+                1: 'Martes',
+                2: 'Miércoles',
+                3: 'Jueves',
+                4: 'Viernes',
+                5: 'Sábado',
+                6: 'Domingo',
+            }
 
+            dia = dias_semana[
+                datetime.strptime(
+                    resul[1],
+                    '%Y-%m-%d'
+                ).weekday()
+            ]
             turno = {
                 'idTurno': resul[0],
                 'fecha': fecha_formateada,
+                'dia': dia,
                 'hora': resul[2],
                 'tratamiento': resul[3],
 
@@ -74,7 +90,7 @@ def listar_los_turnos():
                 turnos.append(turno)
 
         return turnos
-    
+
     ###################################################################################################
 
 def listar_reservas_turno(idTurno):
