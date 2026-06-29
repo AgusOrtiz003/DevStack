@@ -5,7 +5,7 @@ from nicegui import ui, app
 from backend.reservas.listar_reservas import listar_reservas, listar_reservas_recurrentes
 from backend.reservas.cancelar_reserva import cancelar_reserva
 from backend.pagos.crear_preferencia import crear_preferencia_mp
-
+from backend.reservas.cancelar_reserva_recurrente import cancelar_reserva_recurrente_individual
 
 # Página de listado de reservas del paciente
 def pagina_listar_reservas():
@@ -110,18 +110,47 @@ def pagina_listar_reservas():
                 <q-td :props="props">
                     <q-btn
                         v-if="props.row.estado === 'Pendiente'"
-                        label="Cancelar" color="negative" flat dense
-                        @click="$parent.$emit('eliminar', props.row.idReserva)"
+                        label="Cancelar"
+                        color="negative"
+                        flat
+                        dense
+                        @click="$parent.$emit('cancelar_individual', props.row.idReserva)"
                     />
                 </q-td>
             ''')
 
             async def cancelar_individual(idReserva):
-                await cancelar_y_actualizar(idReserva)
-                tabla_detalle.rows = listar_reservas_de_recurrente(recurrente['idReservaRecurrente'])
-                tabla_detalle.update()
 
-            tabla_detalle.on('eliminar', lambda e: cancelar_individual(e.args))
+                try:
+
+                    cancelar_reserva_recurrente_individual(
+                        idReserva
+                    )
+
+                    tabla_detalle.rows = listar_reservas_de_recurrente(
+                        recurrente['idReservaRecurrente']
+                    )
+
+                    tabla_detalle.update()
+
+                    recargar_tablas()
+
+                    ui.notify(
+                        'Reserva cancelada',
+                        color='green'
+                    )
+
+                except Exception as e:
+
+                    ui.notify(
+                        str(e),
+                        color='red'
+                    )
+
+            tabla_detalle.on(
+                'cancelar_individual',
+                lambda e: cancelar_individual(e.args)
+            )
 
             ui.separator()
             ui.button('Cerrar', on_click=dialog.close).props('flat').classes('self-end')
