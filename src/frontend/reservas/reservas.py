@@ -246,9 +246,6 @@ def pagina_reservas(tabla_principal):
             ui.notify('Seleccione todos los datos', color='red')
             return
 
-        # =========================
-        # 🔥 ACÁ RECIÉN CHEQUEÁS CUPOS
-        # =========================
         if verificar_cupo_disponible(turno['idTurno']):
             try:
                 registrar_reserva(
