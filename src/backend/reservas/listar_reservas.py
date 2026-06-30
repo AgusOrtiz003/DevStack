@@ -38,7 +38,8 @@ def listar_reservas_recurrentes(dniPac):
                 COUNT(*)            as cantidad_turnos,
                 MAX(t.tratamiento)  as tratamiento,
                 MAX(t.hora)         as hora,
-                MAX(r.obraSocial)   as obraSocial
+                MAX(r.obraSocial)   as obraSocial,
+                MAX(r.metodoPago)   as metodoPago
             FROM Reservas r
             INNER JOIN Turnos t ON r.idTurno = t.idTurno
             INNER JOIN ReservasRecurrentes rr ON r.idReservaRecurrente = rr.idReservaRecurrente
@@ -54,6 +55,7 @@ def listar_reservas_recurrentes(dniPac):
                 'tratamiento':         res[4],
                 'hora':                res[5],
                 'obraSocial':          res[6],
+                'metodoPago':          res[7],
             }
             for res in cursor.fetchall()
         ]
