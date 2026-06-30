@@ -13,6 +13,7 @@ def crear_tablas_lista_espera():
             obraSocial TEXT NOT NULL,
             metodoPago TEXT NOT NULL,
             estado TEXT NOT NULL,
+            idGrupo INTEGER,
             FOREIGN KEY (idTurno) REFERENCES turnos(idTurno),
             FOREIGN KEY (dniPaciente) REFERENCES pacientes(dniPaciente),
             UNIQUE(dniPaciente, idTurno)
@@ -21,4 +22,19 @@ def crear_tablas_lista_espera():
 
         conexion.commit()
     conexion.close()
+    
+def crear_tablas_lista_espera_recurrente():
+    with sqlite3.connect('src/backend/bdd.db') as conexion:
+        cursor = conexion.cursor()
+
+        # Crear tabla reservas en la BDD
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ListaEsperaRecurrente (
+            idGrupo INTEGER PRIMARY KEY AUTOINCREMENT
+    )
+""")
+
+        conexion.commit()
+    conexion.close()
+
 crear_tablas_lista_espera()

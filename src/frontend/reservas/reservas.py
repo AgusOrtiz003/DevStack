@@ -281,7 +281,7 @@ def pagina_reservas(tabla_principal):
                     ).props('color=primary')
 
             if await espera_dialog:
-                agregar_a_lista_espera(turno['idTurno'], dniPaciente,resultado['obra'], resultado['metodo'])
+                agregar_a_lista_espera(turno['idTurno'], dniPaciente,resultado['obra'], resultado['metodo'], None)
                 ui.notify('Agregado a lista de espera', color='green')
 
     dniPaciente = app.storage.user.get('dni')
@@ -381,11 +381,27 @@ def pagina_reservas(tabla_principal):
             )
 
         except TurnoLlenoException:
+            with ui.dialog() as espera_dialog, ui.card().classes('w-96'):
+                ui.label(
+                    'Uno de los turnos no tiene cupos disponibles. '
+                    '¿Desea entrar en lista de espera?'
+                )
 
-            ui.notify(
-                'Uno de los turnos no tiene cupo recurrente',
-                color='red-500'
-            )
+                with ui.row().classes('w-full justify-end gap-2 mt-2'):
+                    ui.button(
+                        'No',
+                        on_click=lambda: espera_dialog.submit(False)
+                    ).props('flat')
+
+                    ui.button(
+                        'Sí',
+                        on_click=lambda: espera_dialog.submit(True)
+                    ).props('color=primary')
+
+            if await espera_dialog:
+                for idTurno in ids_turnos:
+                    agregar_a_lista_espera(idTurno, dniPaciente, resultado['obra'], resultado['metodo'])
+                ui.notify('Agregado a las listas de espera', color='green')
 
     with ui.row().classes('items-center gap-4 mb-4'):
 

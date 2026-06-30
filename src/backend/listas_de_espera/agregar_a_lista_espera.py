@@ -1,10 +1,19 @@
 import sqlite3
 
-def agregar_a_lista_espera(idTurno, dniPaciente, obraSocial, metodoPago):
+def agregar_a_lista_espera(idTurno, dniPaciente, obraSocial, metodoPago,tieneGrupo):
+    
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
         cursor.execute('''
-            INSERT INTO ListaEspera (idTurno, dniPaciente, obraSocial, metodoPago, estado)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (idTurno, dniPaciente, obraSocial, metodoPago, 'Activo'))
+            INSERT INTO ListaEspera (idTurno, dniPaciente, obraSocial, metodoPago, estado,idGrupo)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (idTurno, dniPaciente, obraSocial, metodoPago, 'Activo', idGrupo))
+        conexion.commit()
+
+def asignar_grupo(idTurno):
+    with sqlite3.connect('src/backend/bdd.db') as conexion:
+        cursor = conexion.cursor()
+        cursor.execute('''
+            INSERT INTO ListaEsperaRecurrente ()
+        ''', )
         conexion.commit()
