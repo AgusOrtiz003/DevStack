@@ -15,6 +15,7 @@ def pagina_reservas(tabla_principal):
 
     fecha_desde = None
     fecha_hasta = None
+    filtros_aplicados = False
 
     fecha_desde_label = ui.label(
         'Fecha desde: no seleccionada'
@@ -87,6 +88,36 @@ def pagina_reservas(tabla_principal):
 
     def aplicar_filtros():
 
+        nonlocal filtros_aplicados
+        filtros_aplicados = True
+
+        if not dia_select.value:
+
+            ui.notify(
+                'Debe seleccionar un día',
+                color='red'
+            )
+
+            return
+
+        if not hora_select.value:
+
+            ui.notify(
+                'Debe seleccionar una hora',
+                color='red'
+            )
+
+            return
+
+        if not tratamiento_select.value:
+
+            ui.notify(
+                'Debe seleccionar un tratamiento',
+                color='red'
+            )
+
+            return
+
         if not fecha_desde:
             ui.notify(
                 'Seleccione una fecha desde',
@@ -122,32 +153,6 @@ def pagina_reservas(tabla_principal):
 
             return
 
-        if not dia_select.value:
-
-            ui.notify(
-                'Debe seleccionar un día',
-                color='red'
-            )
-
-            return
-
-        if not hora_select.value:
-
-            ui.notify(
-                'Debe seleccionar una hora',
-                color='red'
-            )
-
-            return
-
-        if not tratamiento_select.value:
-
-            ui.notify(
-                'Debe seleccionar un tratamiento',
-                color='red'
-            )
-
-            return
 
         filtrados = []
 
@@ -289,20 +294,56 @@ def pagina_reservas(tabla_principal):
 
     async def reservar_recurrente():
 
-        if not dia_select.value or not hora_select.value:
+        if not filtros_aplicados:
+            ui.notify(
+                'Debe presionar "Filtrar" antes de reservar recurrentemente',
+                color='red-500'
+            )
+            return
+
+        if not dia_select.value:
 
             ui.notify(
-                'Debe seleccionar día y hora',
+                'Debe seleccionar un día',
                 color='red-500'
             )
 
             return
 
-        if tabla.rows == turnos_originales:
+        if not hora_select.value:
+
             ui.notify(
-                'Debe aplicar los filtros antes de reservar recurrentemente',
+                'Debe seleccionar una hora',
                 color='red-500'
             )
+
+            return
+
+        if not tratamiento_select.value:
+
+            ui.notify(
+                'Debe seleccionar un tratamiento',
+                color='red-500'
+            )
+
+            return
+
+        if not fecha_desde:
+
+            ui.notify(
+                'Debe seleccionar una fecha desde',
+                color='red-500'
+            )
+
+            return
+
+        if not fecha_hasta:
+
+            ui.notify(
+                'Debe seleccionar una fecha hasta',
+                color='red-500'
+            )
+
             return
 
         turnos_filtrados = tabla.rows
@@ -442,6 +483,8 @@ def pagina_reservas(tabla_principal):
 
         def limpiar_filtros():
 
+            nonlocal filtros_aplicados
+            filtros_aplicados = False
             dia_select.value = None
             hora_select.value = None
             tratamiento_select.value = None

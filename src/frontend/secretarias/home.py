@@ -5,6 +5,7 @@ from frontend.turnos.listar_turnos import pagina_listar_turnos_pendientes
 from frontend.reservas.reservas_secretaria import pagina_reservas_secretaria
 from frontend.turnos.crear_turno import pagina_crear_turno
 from frontend.turnos.modificar_turno import pagina_modificar_turno
+from frontend.reservas.listar_reservas_recurrentes_secretaria import pagina_reservas_recurrentes
 
 from backend.turnos.listar_turnos import listar_los_turnos
 from src.utils.fetch_usuarios import *
@@ -20,6 +21,7 @@ def main_page() -> None:
             ui.tab('Reservar turno',icon='event')
             ui.tab('Crear turno',icon='add')
             ui.tab('Modificar turnos',icon='edit_calendar')
+            ui.tab('Registrar pago recurrente', icon='repeat')
 
         with ui.row().classes('ml-auto'):
             ui.button(icon='account_circle',on_click=lambda: ui.navigate.to('/ver_perfil')).props('flat color=white round')
@@ -37,3 +39,5 @@ def main_page() -> None:
             pagina_crear_turno(tabla_turnos)
         with ui.tab_panel('Modificar turnos'):
             pagina_modificar_turno(tabla_turnos)
+        with ui.tab_panel('Registrar pago recurrente'):
+            pagina_reservas_recurrentes()

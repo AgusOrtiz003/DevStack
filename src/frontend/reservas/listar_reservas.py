@@ -292,15 +292,51 @@ def pagina_listar_reservas():
 
     slot_pendientes = r'''
         <q-td :props="props">
-            <q-btn label="Pagar" color="primary" flat @click="$parent.$emit('pagar', props.row)"/>
-            <q-btn label="Cancelar" color="negative" flat @click="$parent.$emit('eliminar', props.row.idReserva)"/>
+
+            <q-btn
+                v-if="
+                    props.row.metodoPago !== 'Efectivo'
+                    &&
+                    props.row.metodoPago !== 'Transferencia'
+                "
+                label="Pagar"
+                color="primary"
+                flat
+                @click="$parent.$emit('pagar', props.row)"
+            />
+
+            <q-btn
+                label="Cancelar"
+                color="negative"
+                flat
+                @click="$parent.$emit('eliminar', props.row.idReserva)"
+            />
+
         </q-td>
     '''
 
     slot_recurrentes = r'''
         <q-td :props="props">
-            <q-btn label="Pagar todo" color="primary" flat @click="$parent.$emit('pagar_recurrente', props.row)"/>
-            <q-btn label="Ver reservas" color="secondary" flat @click="$parent.$emit('ver_turnos', props.row)"/>
+
+            <q-btn
+                v-if="
+                    props.row.metodoPago !== 'Efectivo'
+                    &&
+                    props.row.metodoPago !== 'Transferencia'
+                "
+                label="Pagar todo"
+                color="primary"
+                flat
+                @click="$parent.$emit('pagar_recurrente', props.row)"
+            />
+
+            <q-btn
+                label="Ver reservas"
+                color="secondary"
+                flat
+                @click="$parent.$emit('ver_turnos', props.row)"
+            />
+
         </q-td>
     '''
 

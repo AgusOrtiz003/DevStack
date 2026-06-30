@@ -1,9 +1,76 @@
 from nicegui import ui, app
 from backend.turnos.listar_turnos import listar_reservas_turno
 from backend.reservas.confirmar_reserva import confirmar_reserva
-
+from backend.pagos.registrar_pago_manual import registrar_pago_manual
+from backend.turnos.listar_turnos import obtener_datos_reserva
 @ui.page('/listadoReservas/{idTurno}')
 def pagina_listar_reservas_secretaria(idTurno: int):
+
+
+    async def abrir_registro_pago(reserva):
+
+        datos = obtener_datos_reserva(
+            reserva['idReserva']
+        )
+
+        with ui.dialog() as dialog, ui.card().classes('w-96'):
+
+            ui.label(
+                'Registrar pago'
+            ).classes('text-h6')
+
+            ui.separator()
+
+            ui.label(
+                f'DNI: {datos["dni"]}'
+            )
+
+            ui.label(
+                f'Paciente: {datos["nombre"]} {datos["apellido"]}'
+            )
+
+            ui.label(
+                f'Fecha: {datos["fecha"]}'
+            )
+
+            ui.label(
+                f'Hora: {datos["hora"]}'
+            )
+
+            ui.label(
+                f'Método: {datos["metodoPago"]}'
+            )
+
+            ui.separator()
+
+            with ui.row():
+
+                ui.button(
+                    'Cancelar',
+                    on_click=lambda: dialog.submit(False)
+                )
+
+                ui.button(
+                    'Confirmar pago',
+                    color='green',
+                    on_click=lambda: dialog.submit(True)
+                )
+
+        resultado = await dialog
+
+        if not resultado:
+            return
+
+        registrar_pago_manual(
+            reserva['idReserva']
+        )
+
+        recargar()
+
+        ui.notify(
+            'Pago registrado correctamente',
+            color='green'
+        )    
 
     def logout():
         app.storage.user.clear()
@@ -82,6 +149,20 @@ def pagina_listar_reservas_secretaria(idTurno: int):
             tabla_pagadas = ui.table(columns=columnas, rows=pagadas, row_key='idReserva').classes('w-full')
             tabla_pagadas.add_slot('body-cell-accion', slot_check_in)
             tabla_pagadas.on('check_in', lambda e: realizar_check_in(e.args))
+        
+        slot_registrar_pago = r'''
+            <q-td :props="props">
+                <q-btn
+                    v-if="props.row.metodoPago === 'Efectivo' || props.row.metodoPago === 'Transferencia'"
+                    label="Registrar pago"
+                    color="green"
+                    flat
+                    dense
+                    icon="payments"
+                    @click="$parent.$emit('registrar_pago', props.row)"
+                />
+            </q-td>
+            '''
 
         # Pendientes
         with ui.card().classes('w-full border-l-4 border-orange-400'):
@@ -89,9 +170,21 @@ def pagina_listar_reservas_secretaria(idTurno: int):
                 ui.icon('schedule', size='sm').classes('text-orange-400')
                 ui.label('Pendientes').classes('text-base font-semibold text-orange-400')
                 ui.badge(str(len(pendientes)), color='orange').classes('ml-1')
-            tabla_pendientes = ui.table(columns=columnas_sin_accion, rows=pendientes, row_key='idReserva').classes('w-full')
-            tabla_pendientes.add_slot('body-cell-accion', slot_check_in)
-            tabla_pendientes.on('check_in', lambda e: realizar_check_in(e.args))
+            tabla_pendientes = ui.table(
+                columns=columnas,
+                rows=pendientes,
+                row_key='idReserva'
+            ).classes('w-full')
+            tabla_pendientes.add_slot(
+                'body-cell-accion',
+                slot_registrar_pago
+            )
+
+            tabla_pendientes.on(
+                'registrar_pago',
+                lambda e: abrir_registro_pago(e.args)
+            )
+
 
 
         # Canceladas

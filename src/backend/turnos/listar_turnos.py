@@ -2,7 +2,6 @@ import sqlite3
 from backend.turnos.turno_pendiente import turno_pendiente
 from datetime import datetime
 
-
 def listar_los_turnos():
 
     with sqlite3.connect('./src/backend/bdd.db') as conexion:
@@ -135,3 +134,41 @@ def listar_reservas_turno(idTurno):
             })
 
         return reservas
+
+def obtener_datos_reserva(idReserva):
+
+    with sqlite3.connect('src/backend/bdd.db') as conexion:
+
+        cursor = conexion.cursor()
+
+        cursor.execute('''
+            SELECT
+                r.idReserva,
+                u.dni,
+                u.nombre,
+                u.apellido,
+                t.fecha,
+                t.hora,
+                r.metodoPago
+            FROM Reservas r
+            INNER JOIN Usuarios u
+                ON r.dniPaciente = u.dni
+            INNER JOIN Turnos t
+                ON r.idTurno = t.idTurno
+            WHERE r.idReserva = ?
+        ''', (idReserva,))
+
+        fila = cursor.fetchone()
+
+        return {
+            'dni': fila[1],
+            'nombre': fila[2],
+            'apellido': fila[3],
+            'fecha': fila[4],
+            'hora': fila[5],
+            'metodoPago': fila[6],
+        }
+
+
+    
+
