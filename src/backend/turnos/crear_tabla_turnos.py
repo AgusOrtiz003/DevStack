@@ -3,10 +3,7 @@ import sqlite3
 def crear_tabla_turnos():
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
-
-        # Crear tabla turnos en la BDD
-        cursor.execute('DROP TABLE IF EXISTS Turnos')
-
+        
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Turnos (
                 idTurno INTEGER PRIMARY KEY AUTOINCREMENT,

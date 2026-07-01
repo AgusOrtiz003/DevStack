@@ -13,10 +13,11 @@ def cancelar_reserva_recurrente(idReservaRecurrente):
 
         cursor.execute('''
             SELECT
-                idReserva,
-                idTurno
-            FROM Reservas
-            WHERE idReservaRecurrente = ?
+            idReserva,
+            idTurno
+        FROM Reservas
+        WHERE idReservaRecurrente = ?
+        AND estado != 'Cancelado'
         ''', (idReservaRecurrente,))
 
         reservas = cursor.fetchall()
@@ -45,12 +46,8 @@ def cancelar_reserva_recurrente(idReservaRecurrente):
             ''', (idReserva,))
 
         cursor.execute('''
-            DELETE FROM Reservas
-            WHERE idReservaRecurrente = ?
-        ''', (idReservaRecurrente,))
-
-        cursor.execute('''
-            DELETE FROM ReservasRecurrentes
+            UPDATE Reservas
+            SET estado = 'Cancelado'
             WHERE idReservaRecurrente = ?
         ''', (idReservaRecurrente,))
 
@@ -104,7 +101,8 @@ def cancelar_reserva_recurrente_individual(idReserva):
         ''', (idReserva,))
 
         cursor.execute('''
-            DELETE FROM Reservas
+            UPDATE Reservas
+            SET estado = 'Cancelado'
             WHERE idReserva = ?
         ''', (idReserva,))
 
@@ -114,6 +112,7 @@ def cancelar_reserva_recurrente_individual(idReserva):
             SELECT COUNT(*)
             FROM Reservas
             WHERE idReservaRecurrente = ?
+            AND estado != 'Cancelado'
         ''', (idReservaRecurrente,))
 
         cantidad = cursor.fetchone()[0]

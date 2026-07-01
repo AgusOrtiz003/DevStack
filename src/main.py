@@ -2,7 +2,7 @@
 
 import pathlib
 import sys
-
+from backend.crear_base_de_datos import crear_base_datos
 # =========================
 # ROOT DEL PROYECTO (src/)
 # =========================
@@ -32,6 +32,7 @@ from pathlib import Path
 from backend.notificaciones.procesar_notificaciones_pendientes import procesar_notificaciones_pendientes
 from nicegui import background_tasks
 import asyncio
+
 
 
 
@@ -252,8 +253,10 @@ def login(redirect_to: str = '/'):
 # =========================
 # RUN
 # =========================
-
+crear_base_datos()
 @app.on_startup
+
+
 async def iniciar_procesador_notificaciones():
     background_tasks.create(
         procesar_notificaciones_periodicamente()

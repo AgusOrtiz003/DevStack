@@ -6,7 +6,7 @@ def crear_tabla_kinesiologos():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("""
-            CREATE TABLE Kinesiologos (
+            CREATE TABLE IF NOT EXISTS Kinesiologos (
 
                 idKinesiologo INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
@@ -22,7 +22,7 @@ def crear_tabla_turnos_kinesiologos():
     with sqlite3.connect(DB_PATH) as conexion:
         cursor = conexion.cursor()
         cursor.execute('''
-                        CREATE TABLE Turno_Kinesiologos (
+                        CREATE TABLE IF NOT EXISTS Turno_Kinesiologos (
                         idTurno INTEGER,
                         idKinesiologo INTEGER,
 

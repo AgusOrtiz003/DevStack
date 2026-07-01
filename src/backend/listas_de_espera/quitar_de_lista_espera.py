@@ -1,6 +1,5 @@
 import sqlite3
 from backend.turnos.verificar_cupo_disponible import verificar_cupo_disponible
-from exceptions.turno_lleno_exception import TurnoLlenoException
 
 def quitar_de_lista_espera(idTurno, dniPaciente):
     """Cambia el estado de la entrada en la lista de espera a 'Inactivo' para un turno y paciente específicos."""

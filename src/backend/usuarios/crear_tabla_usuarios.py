@@ -1,18 +1,34 @@
 import sqlite3
 
-conexion = sqlite3.connect('./src/backend/bdd.db')
-cur= conexion.cursor()
-cur.execute("""
-CREATE TABLE IF NOT EXISTS Usuarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    dni STRING(8) NOT NULL,
-    contraseña STRING(255) NOT NULL,
-    nombre STRING(255) NOT NULL,
-    apellido STRING(255) NOT NULL,
-    email STRING(255) NOT NULL,
-    fechaNac DATE NOT NULL,
-    rol STRING(10) NOT NULL
-)
-""")
-conexion.commit()
-conexion.close()
+def crear_tabla_usuarios():
+
+    try:
+
+        with sqlite3.connect('src/backend/bdd.db') as conexion:
+
+            cursor = conexion.cursor()
+
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS Usuarios (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    dni TEXT NOT NULL,
+                    contraseña TEXT NOT NULL,
+                    nombre TEXT NOT NULL,
+                    apellido TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    fechaNac DATE NOT NULL,
+                    rol TEXT NOT NULL
+                )
+            ''')
+
+            conexion.commit()
+
+            print(
+                'Tabla Usuarios creada correctamente'
+            )
+
+    except Exception as e:
+
+        print(
+            f'Error al crear la tabla Usuarios: {e}'
+        )
