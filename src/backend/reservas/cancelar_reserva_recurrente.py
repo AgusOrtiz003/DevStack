@@ -1,5 +1,5 @@
 import sqlite3
-
+from backend.listas_de_espera.quitar_de_lista_espera import intentar_registrar_reserva_desde_lista_espera
 
 def cancelar_reserva_recurrente(idReservaRecurrente):
 
@@ -140,3 +140,4 @@ def cancelar_reserva_recurrente_individual(idReserva):
             ))
 
         conexion.commit()
+    intentar_registrar_reserva_desde_lista_espera(idTurno)

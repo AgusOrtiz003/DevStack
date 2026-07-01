@@ -39,3 +39,4 @@ def crear_tablas_lista_espera_recurrente():
     conexion.close()
 
 crear_tablas_lista_espera()
+crear_tablas_lista_espera_recurrente()

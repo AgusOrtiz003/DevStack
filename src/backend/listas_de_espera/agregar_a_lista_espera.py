@@ -13,8 +13,8 @@ def crear_grupo():
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
         cursor.execute('''
-            INSERT INTO ListaEsperaRecurrente ()
+            INSERT INTO ListaEsperaRecurrente
             DEFAULT VALUES
-        ''', )
+        ''')
         conexion.commit()
         return cursor.lastrowid
