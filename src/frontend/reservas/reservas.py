@@ -3,7 +3,7 @@ from backend.reservas.registrar_reserva import registrar_reserva
 from backend.turnos.listar_turnos import listar_los_turnos
 from backend.exceptions.turno_lleno_exception import TurnoLlenoException
 from backend.reservas.listar_reservas import listar_reservas
-from backend.listas_de_espera.agregar_a_lista_espera import agregar_a_lista_espera
+from backend.listas_de_espera.agregar_a_lista_espera import agregar_a_lista_espera,crear_grupo
 from backend.turnos.verificar_cupo_disponible import verificar_cupo_disponible
 from src.backend.reservas.registrar_reserva_recurrente import registrar_reservas_recurrentes
 from datetime import datetime
@@ -286,7 +286,7 @@ def pagina_reservas(tabla_principal):
                     ).props('color=primary')
 
             if await espera_dialog:
-                agregar_a_lista_espera(turno['idTurno'], dniPaciente,resultado['obra'], resultado['metodo'], None)
+                agregar_a_lista_espera(turno['idTurno'], dniPaciente,resultado['obra'], resultado['metodo'])
                 ui.notify('Agregado a lista de espera', color='green')
 
     dniPaciente = app.storage.user.get('dni')
@@ -440,8 +440,9 @@ def pagina_reservas(tabla_principal):
                     ).props('color=primary')
 
             if await espera_dialog:
+                idGrupo = crear_grupo()
                 for idTurno in ids_turnos:
-                    agregar_a_lista_espera(idTurno, dniPaciente, resultado['obra'], resultado['metodo'])
+                    agregar_a_lista_espera(idTurno, dniPaciente, resultado['obra'], resultado['metodo'],idGrupo)
                 ui.notify('Agregado a las listas de espera', color='green')
 
     with ui.row().classes('items-center gap-4 mb-4'):

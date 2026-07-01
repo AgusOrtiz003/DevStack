@@ -1,4 +1,6 @@
 import sqlite3
+from backend.turnos.verificar_cupo_disponible import verificar_cupo_disponible
+from exceptions.turno_lleno_exception import TurnoLlenoException
 
 def quitar_de_lista_espera(idTurno, dniPaciente):
     """Cambia el estado de la entrada en la lista de espera a 'Inactivo' para un turno y paciente específicos."""
@@ -16,7 +18,7 @@ def buscar_en_lista_espera(idTurno):
     with sqlite3.connect('src/backend/bdd.db') as conexion:
         cursor = conexion.cursor()
         cursor.execute('''
-            SELECT dniPaciente, obraSocial, metodoPago
+            SELECT dniPaciente, obraSocial, metodoPago, idGrupo
             FROM ListaEspera
             WHERE idTurno = ? AND estado = 'Activo'
             ORDER BY id ASC
@@ -24,6 +26,6 @@ def buscar_en_lista_espera(idTurno):
         ''', (idTurno,))
         resultado = cursor.fetchone()
         if resultado:
-            return resultado[0], resultado[1], resultado[2]  # Retorna dniPaciente, obraSocial, metodoPago
+            return resultado[0], resultado[1], resultado[2], resultado[3]  # Retorna dniPaciente, obraSocial, metodoPago, idGrupo
         else:
             return None

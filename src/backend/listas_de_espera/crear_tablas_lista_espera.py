@@ -16,6 +16,7 @@ def crear_tablas_lista_espera():
             idGrupo INTEGER,
             FOREIGN KEY (idTurno) REFERENCES turnos(idTurno),
             FOREIGN KEY (dniPaciente) REFERENCES pacientes(dniPaciente),
+            FOREIGN KEY (idGrupo) REFERENCES ListaEsperaRecurrente(idGrupo),
             UNIQUE(dniPaciente, idTurno)
     )
 """)
