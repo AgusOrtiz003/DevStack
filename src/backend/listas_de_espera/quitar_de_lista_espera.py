@@ -1,7 +1,10 @@
 import sqlite3
 from backend.turnos.verificar_cupo_disponible import verificar_cupo_disponible
+<<<<<<< HEAD
 from backend.reservas.registrar_reserva import registrar_reserva
 from backend.reservas.registrar_reserva_recurrente import registrar_reservas_recurrentes
+=======
+>>>>>>> 00da10f64928c896dec7cef92a767c5cf6f83b97
 
 def quitar_de_lista_espera(dniPaciente,idTurno,idgrupo=None):
     """Cambia el estado de la entrada en la lista de espera a 'Inactivo' para un turno y paciente específicos."""
