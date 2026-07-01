@@ -139,4 +139,9 @@ def cancelar_reserva_recurrente_individual(idReserva):
             ))
 
         conexion.commit()
-    intentar_registrar_reserva_desde_lista_espera(idTurno)
+    import traceback
+    try:
+        intentar_registrar_reserva_desde_lista_espera(idTurno)
+    except Exception:
+        traceback.print_exc()
+        raise

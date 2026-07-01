@@ -22,15 +22,17 @@ def quitar_de_lista_espera(dniPaciente,idTurno,idgrupo=None):
         conexion.commit()
 
 def buscar_en_lista_espera(idTurno):
-    """Retorna una lista con el dni, método de pago, obra social y grupo de todos los pacientes activos en la lista de espera para un turno específico."""
     with sqlite3.connect('src/backend/bdd.db') as conexion:
+        conexion.row_factory = sqlite3.Row
         cursor = conexion.cursor()
+
         cursor.execute('''
             SELECT dniPaciente, metodoPago, obraSocial, idGrupo
             FROM ListaEspera
             WHERE idTurno = ? AND estado = 'Activo'
             ORDER BY id
         ''', (idTurno,))
+
         return [dict(fila) for fila in cursor.fetchall()]
     
 def buscar_ids_grupo(idGrupo):
@@ -71,7 +73,7 @@ def reserva_recurrente_cumple(idGrupo):
             WHERE idGrupo = ?
         ''', (idGrupo,))
         resultado = cursor.fetchall()
-        todosDisponibles = True
-        for idGrupo in resultado:
-            todosDisponibles=verificar_cupo_disponible(idGrupo)
-        return todosDisponibles
+        for (idTurno,) in cursor.fetchall():
+            if not verificar_cupo_disponible(idTurno):
+                return False
+        return True

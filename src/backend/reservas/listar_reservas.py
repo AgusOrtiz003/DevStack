@@ -7,7 +7,7 @@ def listar_reservas(dniPac):
         cursor.execute('''
             SELECT r.idReserva, r.obraSocial, r.metodoPago, r.estado, 
                    t.fecha, t.hora, t.tratamiento, r.idReservaRecurrente 
-            FROM reservas r 
+            FROM Reservas r 
             INNER JOIN turnos t ON r.idTurno = t.idTurno 
             WHERE dniPaciente = ? 
             ORDER BY t.fecha ASC, t.hora ASC
