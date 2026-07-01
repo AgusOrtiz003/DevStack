@@ -34,23 +34,55 @@ def registrar_reserva(idTurno, obraSoc, metPag, dniPac):
         if cupoActual >= cupoMaximo:
             raise TurnoLlenoException('Turno lleno')
 
-        # Crear reserva
+        # Revisar si existe una reserva cancelada
         cursor.execute('''
-            INSERT INTO Reservas (
-                dniPaciente,
-                idTurno,
-                obraSocial,
-                metodoPago
-            )
-            VALUES (?, ?, ?, ?)
+            SELECT idReserva
+            FROM Reservas
+            WHERE dniPaciente = ?
+            AND idTurno = ?
+            AND estado = 'Cancelado'
         ''', (
             dniPac,
-            idTurno,
-            obraSoc,
-            metPag
+            idTurno
         ))
 
-        idReserva = cursor.lastrowid
+        reserva_cancelada = cursor.fetchone()
+
+        if reserva_cancelada:
+
+            idReserva = reserva_cancelada[0]
+
+            cursor.execute('''
+                UPDATE Reservas
+                SET
+                    estado = 'Pendiente',
+                    obraSocial = ?,
+                    metodoPago = ?
+                WHERE idReserva = ?
+            ''', (
+                obraSoc,
+                metPag,
+                idReserva
+            ))
+
+        else:
+
+            cursor.execute('''
+                INSERT INTO Reservas (
+                    dniPaciente,
+                    idTurno,
+                    obraSocial,
+                    metodoPago
+                )
+                VALUES (?, ?, ?, ?)
+            ''', (
+                dniPac,
+                idTurno,
+                obraSoc,
+                metPag
+            ))
+
+            idReserva = cursor.lastrowid
 
         # Actualizar cupo del turno
         cursor.execute('''

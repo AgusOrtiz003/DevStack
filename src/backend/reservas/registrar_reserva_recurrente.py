@@ -80,23 +80,57 @@ def registrar_reservas_recurrentes(
                 )
 
             cursor.execute('''
-                INSERT INTO Reservas (
-                    dniPaciente,
-                    idTurno,
-                    obraSocial,
-                    metodoPago,
-                    idReservaRecurrente
-                )
-                VALUES (?, ?, ?, ?, ?)
+                SELECT idReserva
+                FROM Reservas
+                WHERE dniPaciente = ?
+                AND idTurno = ?
+                AND estado = 'Cancelado'
             ''', (
                 dniPac,
-                idTurno,
-                obraSoc,
-                metPag,
-                idReservaRecurrente
+                idTurno
             ))
 
-            idReserva = cursor.lastrowid
+            reserva_cancelada = cursor.fetchone()
+
+            if reserva_cancelada:
+
+                idReserva = reserva_cancelada[0]
+
+                cursor.execute('''
+                    UPDATE Reservas
+                    SET
+                        estado = 'Pendiente',
+                        obraSocial = ?,
+                        metodoPago = ?,
+                        idReservaRecurrente = ?
+                    WHERE idReserva = ?
+                ''', (
+                    obraSoc,
+                    metPag,
+                    idReservaRecurrente,
+                    idReserva
+                ))
+
+            else:
+
+                cursor.execute('''
+                    INSERT INTO Reservas (
+                        dniPaciente,
+                        idTurno,
+                        obraSocial,
+                        metodoPago,
+                        idReservaRecurrente
+                    )
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (
+                    dniPac,
+                    idTurno,
+                    obraSoc,
+                    metPag,
+                    idReservaRecurrente
+                ))
+
+                idReserva = cursor.lastrowid
 
             cursor.execute('''
                 UPDATE Turnos
